@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xshxy.seeklightbackend.mapper.TModelMapper">
+
+    <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TModel">
+            <id property="modelId" column="model_id" />
+            <result property="modelName" column="model_name" />
+            <result property="description" column="description" />
+            <result property="provider" column="provider" />
+            <result property="modelKey" column="model_key" />
+            <result property="status" column="status" />
+            <result property="groupId" column="group_id" />
+            <result property="isDeleted" column="is_deleted" />
+            <result property="createdAt" column="created_at" />
+            <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        model_id,model_name,description,provider,model_key,status,
+        group_id,is_deleted,created_at,updated_at
+    </sql>
+</mapper>

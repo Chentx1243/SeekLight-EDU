@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xshxy.seeklightbackend.mapper.TGroupMapper">
+
+    <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TGroup">
+            <id property="groupId" column="group_id" />
+            <result property="groupName" column="group_name" />
+            <result property="groupApiKey" column="group_api_key" />
+            <result property="description" column="description" />
+            <result property="isDeleted" column="is_deleted" />
+            <result property="createdAt" column="created_at" />
+            <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        group_id,group_name,group_api_key,description,is_deleted,created_at,
+        updated_at
+    </sql>
+</mapper>
