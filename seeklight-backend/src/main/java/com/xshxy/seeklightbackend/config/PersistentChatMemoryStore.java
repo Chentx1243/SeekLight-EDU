@@ -92,7 +92,7 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
             }
             return;
         }
-
+        // 非第一次对话
         String historyJson = (String) history.get("messages");
         List<ChatMessage> historyList = messagesFromJson(historyJson);
         historyList.add(lastMessage);

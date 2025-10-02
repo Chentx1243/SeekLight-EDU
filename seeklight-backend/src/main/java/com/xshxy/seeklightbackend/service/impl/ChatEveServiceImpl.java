@@ -83,6 +83,7 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .build();
 
         // 判断是否第一次发起对话
+        // TODO 优化标题记录方式
         TDialogue dialogue = dialogueService.getById(dialogueId);
         if (dialogue == null){
             dialogue = new TDialogue();
