@@ -116,8 +116,6 @@ public class ChatEveServiceImpl implements ChatEveService {
                 })
                 .onError((Throwable error) -> error.printStackTrace())
                 .start();
-
-
         return emitter;
     }
 }

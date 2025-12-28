@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.service;
 
+import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.baomidou.mybatisplus.extension.service.IService;
 import dev.langchain4j.data.message.ChatMessage;
@@ -26,4 +27,11 @@ public interface TDialogueService extends IService<TDialogue> {
      * @return 对话列表
      */
     List<ChatMessage> getChatHistory(String dialogueId);
+
+    /**
+     * 根据对话id删除对话
+     * @param dialogueId 要删除的对话id
+     * @return 删除情况
+     */
+    Result<String> deleteHistoryItem(String dialogueId);
 }

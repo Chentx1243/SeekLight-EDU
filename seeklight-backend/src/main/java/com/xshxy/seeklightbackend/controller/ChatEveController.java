@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.controller;
 
+import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
@@ -51,6 +52,13 @@ public class ChatEveController {
         List<TDialogue> dialoguesList = dialogueService.getHistoryList(userId);
         return dialoguesList;
     }
+
+    @DeleteMapping("/history")
+    public Result<String> deleteHistoryItem(@RequestParam("dialogueId") String dialogueId){
+        Result<String> result = dialogueService.deleteHistoryItem(dialogueId);
+        return result;
+    }
+
 
 
     /**

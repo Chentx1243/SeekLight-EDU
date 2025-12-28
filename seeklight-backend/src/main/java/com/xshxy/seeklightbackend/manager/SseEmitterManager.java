@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-// 暂时弃用
 public class SseEmitterManager {
 
     // 存储所有的连接，key 可以是 userId、sessionId

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.result.DeleteResult;
+import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.service.TDialogueService;
 import com.xshxy.seeklightbackend.mapper.TDialogueMapper;
@@ -13,12 +15,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJson;
 
 /**
 * @author 陈凯宁
@@ -39,6 +40,7 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final String HISTORY = "chat_memory_history";
+    private final String COLLECTION = "chat_memory_doc";
 
     public TDialogueServiceImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -70,6 +72,29 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
             throw new RuntimeException(e);
         }
         return chatHistoryList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<String> deleteHistoryItem(String dialogueId) {
+        // TODO 数据一致性优化
+        LambdaQueryWrapper<TDialogue> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TDialogue::getDialogueId, dialogueId);
+        int deleteCount = dialogueMapper.delete(queryWrapper);
+
+        Query query = new Query(Criteria.where("_id").is(dialogueId));
+        DeleteResult removeHistory = mongoTemplate.remove(query, HISTORY);
+        DeleteResult removeMemory = mongoTemplate.remove(query, COLLECTION);
+
+        // mongodb其中之一删除失败，抛出异常，回滚mysql的数据
+        if (removeHistory.getDeletedCount() == 0 && removeMemory.getDeletedCount() == 0) {
+            throw new RuntimeException("MongoDB 删除失败");
+        }
+
+        if (deleteCount > 0){
+            return Result.success("删除成功");
+        }
+        return Result.failure("未找到可删除的，系统内部错误");
     }
 }
 
