@@ -57,7 +57,7 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
     }
 
     @Override
-    public List<ChatMessage> getChatHistory(String dialogueId) {
+    public List<ChatMessage> getChatHistory(Long dialogueId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(dialogueId));
         Map one = mongoTemplate.findOne(query, Map.class, HISTORY);
@@ -76,7 +76,7 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> deleteHistoryItem(String dialogueId) {
+    public Result<String> deleteHistoryItem(Long dialogueId) {
         // TODO 数据一致性优化
         LambdaQueryWrapper<TDialogue> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TDialogue::getDialogueId, dialogueId);

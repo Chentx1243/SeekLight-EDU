@@ -26,12 +26,12 @@ public interface TDialogueService extends IService<TDialogue> {
      * @param dialogueId 对话id
      * @return 对话列表
      */
-    List<ChatMessage> getChatHistory(String dialogueId);
+    List<ChatMessage> getChatHistory(Long dialogueId);
 
     /**
      * 根据对话id删除对话
      * @param dialogueId 要删除的对话id
      * @return 删除情况
      */
-    Result<String> deleteHistoryItem(String dialogueId);
+    Result<String> deleteHistoryItem(Long dialogueId);
 }

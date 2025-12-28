@@ -42,36 +42,6 @@ public class ChatEveController {
         return chatEveService.chat(emitter,chatBody,key);
     }
 
-    /**
-     * 获取历史对话列表
-     * @param userId 用户Id
-     * @return 对话列表
-     */
-    @GetMapping("/history")
-    public List<TDialogue> getHistoryList(@RequestParam("userId") int userId){
-        List<TDialogue> dialoguesList = dialogueService.getHistoryList(userId);
-        return dialoguesList;
-    }
-
-    @DeleteMapping("/history")
-    public Result<String> deleteHistoryItem(@RequestParam("dialogueId") String dialogueId){
-        Result<String> result = dialogueService.deleteHistoryItem(dialogueId);
-        return result;
-    }
-
-
-
-    /**
-     * 根据对话id获取该对话的历史数据
-     * @param dialogueId 对话id
-     * @return 对话列表
-     */
-
-    @GetMapping("/chatHistory")
-    public List<ChatMessage> getChatHistory(@RequestParam("dialogueId") String dialogueId){
-        List<ChatMessage> result  = dialogueService.getChatHistory(dialogueId);
-        return result;
-    }
 
 
 }
