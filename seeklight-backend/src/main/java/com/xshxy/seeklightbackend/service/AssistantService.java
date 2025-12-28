@@ -13,6 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public interface AssistantService extends ChatMemoryAccess {
 
 
-    TokenStream chat(@MemoryId String memoryId, @UserMessage String message);
+    TokenStream chat(@MemoryId Long memoryId, @UserMessage String message);
 
 }

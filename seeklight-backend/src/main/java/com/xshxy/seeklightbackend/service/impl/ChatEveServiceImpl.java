@@ -60,8 +60,8 @@ public class ChatEveServiceImpl implements ChatEveService {
         List<ChatEveRequest.Message> messages = chatBody.getMessages();
         ChatEveRequest.Message message = messages.get(0);
         String userContent = message.getContent();
-        // 获取dialogueId(string转为int)
-        int dialogueId = Integer.parseInt(chatBody.getDialogueId());
+        // 获取dialogueId
+        Long dialogueId = chatBody.getDialogueId();
         // 构建模型组件（真正用于对话的模型核心）
         StreamingChatLanguageModel model = OpenAiStreamingChatModel.builder()
                 .baseUrl("https://api.vveai.com/v1")
@@ -89,7 +89,7 @@ public class ChatEveServiceImpl implements ChatEveService {
             dialogue = new TDialogue();
             dialogue.setModelId(1);
             dialogue.setUserId(user.getUserId());
-            dialogue.setDialogueId((long) dialogueId);
+            dialogue.setDialogueId(dialogueId);
             // 最多截取10个用户输入的内容作为title
             dialogue.setTitle(userContent.substring(0,Math.min(10,userContent.length())));
             // 存入数据库
@@ -97,7 +97,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         }
 
         // 利用Ai服务发起对话请求
-        String memoryId = chatBody.getDialogueId();
+        Long memoryId = chatBody.getDialogueId();
         TokenStream tokenRespond = aiService.chat(memoryId,userContent);
         // 注册流式行为
         tokenRespond.onPartialResponse((String partialResponse) -> {

@@ -18,7 +18,7 @@ public class ChatEveRequest {
     /**
      * 对话id
      */
-    private String dialogueId;
+    private Long dialogueId;
     /**
      * 模型名称
      */
