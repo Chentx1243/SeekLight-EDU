@@ -59,6 +59,16 @@ public class TUser {
      */
     private Date updatedAt;
 
+    /**
+     * 账号是否启用
+     */
+    private int enabled;
+
+    /**
+     * 角色
+     */
+    private String role;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

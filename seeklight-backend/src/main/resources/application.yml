@@ -1,12 +1,12 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://root:sp77shtq@dbconn.sealosbja.site:35798/agent_platform?authSource=admin&directConnection=true
+      uri: mongodb://root:sp77shtq@dbconn.sealosbja.site:34864/agent_platform?authSource=admin&directConnection=true
   application:
     name:
       seeklight-backend
   datasource:
-    url: jdbc:mysql://root:s7756zxw@dbconn.sealosbja.site:34198/agent_platform_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2b8
+    url: jdbc:mysql://root:s7756zxw@dbconn.sealosbja.site:43802/agent_platform_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2b8
     username: root
     password: s7756zxw
     hikari:

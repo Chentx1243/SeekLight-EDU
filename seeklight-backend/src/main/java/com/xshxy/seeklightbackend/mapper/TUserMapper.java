@@ -2,6 +2,8 @@ package com.xshxy.seeklightbackend.mapper;
 
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
 * @author 陈凯宁
@@ -10,6 +12,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.xshxy.seeklightbackend.domain.TUser
 */
 public interface TUserMapper extends BaseMapper<TUser> {
+
+    @Select("SELECT * FROM t_user WHERE user_account = #{account}")
+    TUser selectByAccount(@Param("account") String account);
 
 }
 
