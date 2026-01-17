@@ -52,8 +52,7 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
         LambdaQueryWrapper<TDialogue> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TDialogue::getUserId, userId);
         queryWrapper.orderByDesc(TDialogue::getCreatedAt);
-        List<TDialogue> dialogues = dialogueMapper.selectList(queryWrapper);
-        return dialogues;
+        return dialogueMapper.selectList(queryWrapper);
     }
 
     @Override

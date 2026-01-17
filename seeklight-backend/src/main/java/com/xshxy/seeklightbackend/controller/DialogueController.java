@@ -2,7 +2,9 @@ package com.xshxy.seeklightbackend.controller;
 
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
+import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.service.TDialogueService;
+import com.xshxy.seeklightbackend.service.UserInfoService;
 import dev.langchain4j.data.message.ChatMessage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class DialogueController {
     @Resource
     private TDialogueService dialogueService;
 
+    @Resource
+    private UserInfoService userInfoService;
+
 
     /**
      * 获取dialogue列表
@@ -23,8 +28,12 @@ public class DialogueController {
      * @return 对话列表
      */
     @GetMapping("/history")
-    public List<TDialogue> getHistoryList(@RequestParam("userId") int userId){
-        List<TDialogue> dialoguesList = dialogueService.getHistoryList(userId);
+    public List<TDialogue> getHistoryList(){
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getUserId() == null) {
+            return List.of();
+        }
+        List<TDialogue> dialoguesList = dialogueService.getHistoryList(user.getUserId());
         return dialoguesList;
     }
 
