@@ -34,4 +34,11 @@ public interface TDialogueService extends IService<TDialogue> {
      * @return 删除情况
      */
     Result<String> deleteHistoryItem(Long dialogueId);
+
+    /**
+     * 根据对话id查询对话
+     * @param dialogueId 对话id
+     * @return 对话信息
+     */
+    TDialogue getById(Long dialogueId);
 }

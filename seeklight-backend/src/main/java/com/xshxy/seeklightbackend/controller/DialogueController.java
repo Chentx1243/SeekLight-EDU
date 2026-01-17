@@ -44,6 +44,24 @@ public class DialogueController {
      */
     @DeleteMapping("/history")
     public Result<String> deleteHistoryItem(@RequestParam("dialogueId") Long dialogueId){
+        // 获取当前登录用户
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getUserId() == null) {
+            return Result.failure("用户未登录");
+        }
+
+        // 查询对话信息并校验权限
+        TDialogue dialogue = dialogueService.getById(dialogueId);
+        if (dialogue == null) {
+            return Result.failure("对话不存在");
+        }
+
+        // 校验对话是否属于当前用户
+        if (!dialogue.getUserId().equals(user.getUserId())) {
+            return Result.failure("无权删除该对话");
+        }
+
+        // 执行删除操作
         Result<String> result = dialogueService.deleteHistoryItem(dialogueId);
         return result;
     }
@@ -56,8 +74,25 @@ public class DialogueController {
 
     @GetMapping("/chatHistory")
     public List<ChatMessage> getChatHistory(@RequestParam("dialogueId") Long dialogueId){
-        List<ChatMessage> result  = dialogueService.getChatHistory(dialogueId);
-        return result;
+        // 获取当前登录用户
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getUserId() == null) {
+            return List.of();
+        }
+
+        // 查询对话信息并校验权限
+        TDialogue dialogue = dialogueService.getById(dialogueId);
+        if (dialogue == null) {
+            return List.of();
+        }
+
+        // 校验对话是否属于当前用户
+        if (!dialogue.getUserId().equals(user.getUserId())) {
+            return List.of();
+        }
+
+        // 执行查询操作
+        return dialogueService.getChatHistory(dialogueId);
     }
 
 

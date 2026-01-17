@@ -95,6 +95,11 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
         }
         return Result.failure("未找到可删除的，系统内部错误");
     }
+
+    @Override
+    public TDialogue getById(Long dialogueId) {
+        return dialogueMapper.selectById(dialogueId);
+    }
 }
 
 
