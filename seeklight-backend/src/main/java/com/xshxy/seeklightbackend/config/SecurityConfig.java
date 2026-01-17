@@ -2,6 +2,7 @@ package com.xshxy.seeklightbackend.config;
 
 import com.xshxy.seeklightbackend.config.filter.JwtAuthenticationFilter;
 import com.xshxy.seeklightbackend.service.impl.CustomUserDetailsService;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,12 @@ public class SecurityConfig {
         http
                 .cors(cors ->{})
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
+                        //放行异步派发（SSE 完成/超时/错误会触发）
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+                        // ERROR 派发也放行，避免 committed 后再走错误页导致刷栈
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/login", "/register").permitAll() // 登录接口放行
                         .anyRequest().authenticated()
                 )
