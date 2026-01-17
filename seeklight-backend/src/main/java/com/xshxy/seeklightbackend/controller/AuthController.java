@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.controller;
 
+import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.mapper.TUserMapper;
 import com.xshxy.seeklightbackend.request.LoginRequest;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,31 +38,35 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public Result<String> login(@RequestBody LoginRequest request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+            org.springframework.security.core.userdetails.User user =
+                    (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
-        org.springframework.security.core.userdetails.User user =
-                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-
-        // 使用 role + username 生成 JWT
-        return jwtUtil.generateToken(user.getUsername(),
-                user.getAuthorities().iterator().next().getAuthority());
+            // 使用 role + username 生成 JWT
+            String token = jwtUtil.generateToken(user.getUsername(),
+                    user.getAuthorities().iterator().next().getAuthority());
+            
+            return Result.success(token);
+        } catch (AuthenticationException e) {
+            return Result.failure("用户名或密码错误");
+        }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public Result<String> register(@RequestBody RegisterRequest request) {
 
         // 1. 检查用户名是否已存在
         TUser existing = userMapper.selectByAccount(request.getUsername());
         if (existing != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("用户名已存在");
+            return Result.failure("用户名已存在");
         }
 
         // 2. 创建用户实体
@@ -78,6 +84,6 @@ public class AuthController {
         // 3. 插入数据库
         userMapper.insert(user);
 
-        return ResponseEntity.ok("注册成功");
+        return Result.success("注册成功");
     }
 }

@@ -37,7 +37,7 @@ public class ChatEveController {
     @PostMapping("/runs")
     public SseEmitter chatEveRuns(
             @RequestBody ChatEveRequest chatBody,
-            @RequestHeader(value = "Authorization", required = false) String key){
+            @RequestHeader(value = "Api-key", required = false) String key){
         SseEmitter emitter = emitterManager.getEmitter(chatBody.getUser());
         return chatEveService.chat(emitter,chatBody,key);
     }

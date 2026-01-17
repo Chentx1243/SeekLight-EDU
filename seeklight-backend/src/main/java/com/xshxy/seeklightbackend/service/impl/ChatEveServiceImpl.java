@@ -47,10 +47,13 @@ public class ChatEveServiceImpl implements ChatEveService {
     @Resource
     private PersistentChatMemoryStore store;
 
+    @Resource
+    private UserInfoService userInfoService;
+
     @Override
     public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody, String key) {
         // 获取用户信息
-        TUser user = userService.getById(chatBody.getUser());
+        TUser user = userInfoService.getUser();
         // 获取分组
         TGroup group = groupService.getById(user.getGroupId());
         // 获取请求的模型
@@ -83,7 +86,6 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .build();
 
         // 判断是否第一次发起对话
-        // TODO 优化标题记录方式
         TDialogue dialogue = dialogueService.getById(dialogueId);
         if (dialogue == null){
             dialogue = new TDialogue();
