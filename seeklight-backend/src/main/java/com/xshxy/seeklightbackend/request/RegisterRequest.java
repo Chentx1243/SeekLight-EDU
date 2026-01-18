@@ -1,15 +1,17 @@
 package com.xshxy.seeklightbackend.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+@Schema(name = "RegisterRequest", description = "注册请求")
 @Data
 public class RegisterRequest {
-    // 用户账号
+    @Schema(description = "用户名", requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
-    // 用户密码（明文）
+    @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
-    // 用户姓名（昵称）
+    @Schema(description = "姓名/昵称")
     private String name;
-    // 用户角色
-    private String role; // 可选：默认USER
+    @Schema(description = "角色，默认 USER")
+    private String role;
 }

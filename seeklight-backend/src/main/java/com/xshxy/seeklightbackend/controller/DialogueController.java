@@ -7,11 +7,15 @@ import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TDialogueService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import dev.langchain4j.data.message.ChatMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "对话接口")
 @RestController
 @RequestMapping("/dialogue")
 public class DialogueController {
@@ -27,6 +31,7 @@ public class DialogueController {
      * @return 对话id
      */
     @PostMapping("/init")
+    @Operation(summary = "初始化对话", description = "为当前登录用户创建新的对话")
     public Long initDialogue() {
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {
@@ -47,6 +52,7 @@ public class DialogueController {
      * @return 对话列表
      */
     @GetMapping("/history")
+    @Operation(summary = "查询对话列表", description = "获取当前登录用户的对话历史")
     public List<TDialogue> getHistoryList(){
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {
@@ -62,7 +68,10 @@ public class DialogueController {
      * @return
      */
     @DeleteMapping("/history")
-    public Result<String> deleteHistoryItem(@RequestParam("dialogueId") Long dialogueId){
+    @Operation(summary = "删除对话", description = "删除指定对话及其历史记录")
+    public Result<String> deleteHistoryItem(
+            @Parameter(description = "对话ID", required = true)
+            @RequestParam("dialogueId") Long dialogueId){
         // 获取当前登录用户
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {
@@ -92,7 +101,10 @@ public class DialogueController {
      */
 
     @GetMapping("/chatHistory")
-    public List<ChatMessage> getChatHistory(@RequestParam("dialogueId") Long dialogueId){
+    @Operation(summary = "查询对话详情", description = "根据对话ID获取对话消息列表")
+    public List<ChatMessage> getChatHistory(
+            @Parameter(description = "对话ID", required = true)
+            @RequestParam("dialogueId") Long dialogueId){
         // 获取当前登录用户
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {

@@ -45,6 +45,7 @@ public class SecurityConfig {
                         // ERROR 派发也放行，避免 committed 后再走错误页导致刷栈
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/login", "/register").permitAll() // 登录接口放行
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)

@@ -5,6 +5,9 @@ import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TGroupService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+@Tag(name = "分组管理")
 @RestController
 @RequestMapping("/group")
 public class GroupController {
@@ -20,6 +24,7 @@ public class GroupController {
     private TGroupService groupService;
 
     @PostMapping
+    @Operation(summary = "新增分组", description = "创建新的分组配置")
     public Result<TGroup> createGroup(@RequestBody TGroup request) {
         if (request == null) {
             throw new BusinessException("分组信息不能为空");
@@ -43,7 +48,10 @@ public class GroupController {
     }
 
     @GetMapping
-    public Result<List<TGroup>> listGroups(@RequestParam(value = "groupName", required = false) String groupName) {
+    @Operation(summary = "查询分组", description = "支持按分组名称模糊匹配")
+    public Result<List<TGroup>> listGroups(
+            @Parameter(description = "分组名称（模糊匹配）")
+            @RequestParam(value = "groupName", required = false) String groupName) {
         LambdaQueryWrapper<TGroup> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(groupName)) {
             queryWrapper.like(TGroup::getGroupName, groupName);
@@ -53,6 +61,7 @@ public class GroupController {
     }
 
     @PutMapping("/{groupId}")
+    @Operation(summary = "修改分组", description = "按分组ID更新分组信息")
     public Result<TGroup> updateGroup(@PathVariable Integer groupId, @RequestBody TGroup request) {
         if (groupId == null) {
             throw new BusinessException("分组ID不能为空");
@@ -85,6 +94,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}")
+    @Operation(summary = "删除分组", description = "按分组ID软删除分组")
     public Result<String> deleteGroup(@PathVariable Integer groupId) {
         if (groupId == null) {
             throw new BusinessException("分组ID不能为空");

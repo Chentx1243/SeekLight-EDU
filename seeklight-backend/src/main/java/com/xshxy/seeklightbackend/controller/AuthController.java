@@ -6,10 +6,9 @@ import com.xshxy.seeklightbackend.mapper.TUserMapper;
 import com.xshxy.seeklightbackend.request.LoginRequest;
 import com.xshxy.seeklightbackend.request.RegisterRequest;
 import com.xshxy.seeklightbackend.util.JwtUtil;
-import opennlp.tools.util.StringUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,8 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.UUID;
-
+@Tag(name = "认证接口")
 @RestController
 public class AuthController {
 
@@ -38,6 +36,7 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
+    @Operation(summary = "用户登录", description = "校验用户名和密码，返回JWT")
     public Result<String> login(@RequestBody LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -61,6 +60,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "用户注册", description = "创建新用户并返回注册结果")
     public Result<String> register(@RequestBody RegisterRequest request) {
 
         // 1. 检查用户名是否已存在

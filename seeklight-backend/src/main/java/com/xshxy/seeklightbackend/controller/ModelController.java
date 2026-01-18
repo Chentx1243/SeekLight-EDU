@@ -7,6 +7,9 @@ import com.xshxy.seeklightbackend.domain.TModel;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TGroupService;
 import com.xshxy.seeklightbackend.service.TModelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+@Tag(name = "模型管理")
 @RestController
 @RequestMapping("/model")
 public class ModelController {
@@ -25,6 +29,7 @@ public class ModelController {
     private TGroupService groupService;
 
     @PostMapping
+    @Operation(summary = "新增模型", description = "新增模型并校验所属分组存在")
     public Result<TModel> createModel(@RequestBody TModel request) {
         if (request == null) {
             throw new BusinessException("模型信息不能为空");
@@ -59,9 +64,13 @@ public class ModelController {
     }
 
     @GetMapping
+    @Operation(summary = "查询模型", description = "支持按名称模糊匹配、状态和分组筛选")
     public Result<List<TModel>> listModels(
+            @Parameter(description = "模型名称（模糊匹配）")
             @RequestParam(value = "modelName", required = false) String modelName,
+            @Parameter(description = "模型状态：1上架，0下架")
             @RequestParam(value = "status", required = false) Integer status,
+            @Parameter(description = "分组ID")
             @RequestParam(value = "groupId", required = false) Integer groupId) {
         LambdaQueryWrapper<TModel> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(modelName)) {
@@ -78,6 +87,7 @@ public class ModelController {
     }
 
     @PutMapping("/{modelId}")
+    @Operation(summary = "修改模型", description = "按模型ID更新模型信息")
     public Result<TModel> updateModel(@PathVariable Integer modelId, @RequestBody TModel request) {
         if (modelId == null) {
             throw new BusinessException("模型ID不能为空");
@@ -123,6 +133,7 @@ public class ModelController {
     }
 
     @DeleteMapping("/{modelId}")
+    @Operation(summary = "删除模型", description = "按模型ID软删除模型")
     public Result<String> deleteModel(@PathVariable Integer modelId) {
         if (modelId == null) {
             throw new BusinessException("模型ID不能为空");

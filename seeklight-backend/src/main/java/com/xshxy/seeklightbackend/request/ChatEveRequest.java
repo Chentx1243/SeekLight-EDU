@@ -1,63 +1,41 @@
 package com.xshxy.seeklightbackend.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
 
-/**
- * 用于接收chatEve的请求实体类
- */
+@Schema(name = "ChatEveRequest", description = "聊天请求")
 @Data
 public class ChatEveRequest {
 
-    /**
-     * user seeklight平台唯一用户标识字段
-     */
+    @Schema(description = "平台用户唯一标识", requiredMode = Schema.RequiredMode.REQUIRED)
     private String user;
 
-    /**
-     * 对话id
-     */
+    @Schema(description = "对话ID")
     private Long dialogueId;
-    /**
-     * 模型名称
-     */
+
+    @Schema(description = "模型名称")
     private String model;
 
-    /**
-     * 聊天内容
-     */
+    @Schema(description = "聊天消息列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Message> messages;
 
-    /**
-     * 最大tokens
-     */
+    @Schema(description = "最大 tokens")
     private Integer maxTokens;
 
-    /**
-     * 采样温度
-     */
+    @Schema(description = "采样温度")
     private Double temperature;
 
-    /**
-     * 是否流式返回
-     */
+    @Schema(description = "是否流式返回")
     private Boolean stream;
 
-    /**
-     * 聊天内容实体类
-     */
+    @Schema(name = "ChatEveMessage", description = "聊天消息")
     @Data
     public static class Message {
-        /**
-         * 角色 user/system
-         */
+        @Schema(description = "角色：user/system/assistant")
         private String role;
-
-        /**
-         * 内容
-         */
+        @Schema(description = "消息内容")
         private String content;
     }
-
 }
