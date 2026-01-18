@@ -1,18 +1,11 @@
 package com.xshxy.seeklightbackend.controller;
 
-import com.xshxy.seeklightbackend.common.Result;
-import com.xshxy.seeklightbackend.domain.TDialogue;
-import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.ChatEveService;
-import com.xshxy.seeklightbackend.service.TDialogueService;
-import dev.langchain4j.data.message.ChatMessage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/chatEve")
@@ -23,9 +16,6 @@ public class ChatEveController {
 
     @Resource
     private ChatEveService chatEveService;
-
-    @Resource
-    private TDialogueService dialogueService;
 
     /**
      * 流式对话接口

@@ -23,4 +23,8 @@ public class Result<T> {
     public static <T> Result<T> failure(String message) {
         return new Result<>(500, message, null);
     }
+
+    public static <T> Result<T> failure(int code, String message) {
+        return new Result<>(code, message, null);
+    }
 }

@@ -4,6 +4,7 @@ import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.*;
 import dev.langchain4j.data.message.ChatMessage;
@@ -88,14 +89,19 @@ public class ChatEveServiceImpl implements ChatEveService {
         // 判断是否第一次发起对话
         TDialogue dialogue = dialogueService.getById(dialogueId);
         if (dialogue == null){
-            dialogue = new TDialogue();
-            dialogue.setModelId(1);
-            dialogue.setUserId(user.getUserId());
-            dialogue.setDialogueId(dialogueId);
+            throw new BusinessException("对话不存在，请先获取新对话id");
+        }
+        Integer dialogueUserId = dialogue.getUserId();
+        if (dialogueUserId == null || !dialogueUserId.equals(user.getUserId())) {
+            throw new BusinessException("非法请求，请先获取新对话id");
+        }
+        if (dialogue.getTitle() == null || dialogue.getTitle().isBlank()) {
             // 最多截取10个用户输入的内容作为title
-            dialogue.setTitle(userContent.substring(0,Math.min(10,userContent.length())));
-            // 存入数据库
-            dialogueService.save(dialogue);
+            dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
+            if (dialogue.getModelId() == null) {
+                dialogue.setModelId(1);
+            }
+            dialogueService.updateById(dialogue);
         }
 
         // 利用Ai服务发起对话请求

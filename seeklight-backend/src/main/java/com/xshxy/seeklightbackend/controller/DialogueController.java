@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TDialogueService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import dev.langchain4j.data.message.ChatMessage;
@@ -20,6 +21,24 @@ public class DialogueController {
 
     @Resource
     private UserInfoService userInfoService;
+
+    /**
+     * 初始化对话id
+     * @return 对话id
+     */
+    @PostMapping("/init")
+    public Long initDialogue() {
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getUserId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        TDialogue dialogue = new TDialogue();
+        dialogue.setUserId(user.getUserId());
+        dialogue.setModelId(1);
+        dialogue.setTitle("");
+        dialogueService.save(dialogue);
+        return dialogue.getDialogueId();
+    }
 
 
     /**
