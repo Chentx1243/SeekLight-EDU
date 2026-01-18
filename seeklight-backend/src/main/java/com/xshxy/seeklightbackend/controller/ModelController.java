@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TModel;
+import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TGroupService;
 import com.xshxy.seeklightbackend.service.TModelService;
+import com.xshxy.seeklightbackend.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,9 @@ public class ModelController {
 
     @Resource
     private TGroupService groupService;
+
+    @Resource
+    private UserInfoService userInfoService;
 
     @PostMapping
     @Operation(summary = "新增模型", description = "新增模型并校验所属分组存在")
@@ -85,6 +90,31 @@ public class ModelController {
         queryWrapper.orderByDesc(TModel::getCreatedAt);
         return Result.success(modelService.list(queryWrapper));
     }
+
+
+    @GetMapping("/available")
+    @Operation(summary = "前台可用模型列表", description = "仅返回当前登录用户所在分组的模型")
+    public Result<List<TModel>> listAvailableModels(
+            @Parameter(description = "模型名称（模糊匹配）")
+            @RequestParam(value = "modelName", required = false) String modelName,
+            @Parameter(description = "模型状态：1上架，0下架")
+            @RequestParam(value = "status", required = false) Integer status) {
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getGroupId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        LambdaQueryWrapper<TModel> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(modelName)) {
+            queryWrapper.like(TModel::getModelName, modelName);
+        }
+        if (status != null) {
+            queryWrapper.eq(TModel::getStatus, status);
+        }
+        queryWrapper.eq(TModel::getGroupId, user.getGroupId());
+        queryWrapper.orderByDesc(TModel::getCreatedAt);
+        return Result.success(modelService.list(queryWrapper));
+    }
+
 
     @PutMapping("/{modelId}")
     @Operation(summary = "修改模型", description = "按模型ID更新模型信息")
