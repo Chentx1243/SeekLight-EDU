@@ -1,8 +1,10 @@
 package com.xshxy.seeklightbackend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.domain.TGroup;
+import com.xshxy.seeklightbackend.domain.TModel;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
@@ -59,6 +61,11 @@ public class ChatEveServiceImpl implements ChatEveService {
         TGroup group = groupService.getById(user.getGroupId());
         // 获取请求的模型
         String modelCode = chatBody.getModel();
+        TModel modelEntity = modelService.getOne(new LambdaQueryWrapper<TModel>()
+                .eq(TModel::getModelKey, modelCode));
+        if (modelEntity == null) {
+            throw new BusinessException("模型不合法");
+        }
         String apiKey = group.getGroupApiKey();
         // 获取用户的提问
         List<ChatEveRequest.Message> messages = chatBody.getMessages();
@@ -99,7 +106,7 @@ public class ChatEveServiceImpl implements ChatEveService {
             // 最多截取10个用户输入的内容作为title
             dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
             if (dialogue.getModelId() == null) {
-                dialogue.setModelId(1);
+                dialogue.setModelId(modelEntity.getModelId());
             }
             dialogueService.updateById(dialogue);
         }
