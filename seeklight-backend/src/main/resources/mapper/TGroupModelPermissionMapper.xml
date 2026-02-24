@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper">
+
+    <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TGroupModelPermission">
+            <id property="id" column="id" />
+            <result property="groupId" column="group_id" />
+            <result property="modelId" column="model_id" />
+            <result property="visible" column="visible" />
+            <result property="callable" column="callable" />
+            <result property="isDeleted" column="is_deleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,group_id,model_id,visible,callable,is_deleted
+    </sql>
+</mapper>
