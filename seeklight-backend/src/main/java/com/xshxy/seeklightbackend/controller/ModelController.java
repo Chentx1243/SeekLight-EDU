@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TModel;
+import com.xshxy.seeklightbackend.domain.TModelProvider;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TGroupService;
+import com.xshxy.seeklightbackend.service.TModelProviderService;
 import com.xshxy.seeklightbackend.service.TModelService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +35,9 @@ public class ModelController {
     @Resource
     private UserInfoService userInfoService;
 
+    @Resource
+    private TModelProviderService providerService;
+
     @PostMapping
     @Operation(summary = "新增模型", description = "新增模型并校验所属分组存在")
     public Result<TModel> createModel(@RequestBody TModel request) {
@@ -45,6 +50,15 @@ public class ModelController {
         if (!StringUtils.hasText(request.getModelKey())) {
             throw new BusinessException("模型标识不能为空");
         }
+        if(request.getProvider() == null){
+            throw new BusinessException("请提供模型供应商编号");
+        }
+        // 获取模型供应商信息
+        TModelProvider provider = providerService.getById(request.getProvider());
+        if (provider == null) {
+            throw new BusinessException("模型供应商不存在");
+        }
+
         Date now = new Date();
         TModel model = new TModel();
         model.setModelName(request.getModelName());

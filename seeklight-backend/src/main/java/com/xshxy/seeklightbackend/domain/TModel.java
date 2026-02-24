@@ -31,7 +31,7 @@ public class TModel {
     /**
      * 模型提供方
      */
-    private String provider;
+    private Integer provider;
 
     /**
      * 模型请求标识（真实调用名）
