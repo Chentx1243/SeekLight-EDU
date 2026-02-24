@@ -13,7 +13,7 @@ public class JwtUtil {
 
     // 密钥，建议 32+ 字节，生产环境请放配置文件
     private static final String SECRET = "your-very-secret-key-please-change-to-long-one";
-    private static final long EXPIRATION = 3600_000; // 1 小时
+    private static final long EXPIRATION = 3600_00000;
 
     /**
      * 生成 JWT Token

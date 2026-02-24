@@ -1,9 +1,7 @@
 package com.xshxy.seeklightbackend.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
 import lombok.Data;
 
@@ -20,10 +18,6 @@ public class TModelProvider {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 所属展示模型 id
-     */
-    private Integer modelId;
 
     /**
      * 供应商名称
@@ -48,6 +42,7 @@ public class TModelProvider {
     /**
      * 逻辑删除标志位（0=未删除，1=已删除）
      */
+    @TableLogic
     private Integer isDeleted;
 
     /**
@@ -73,7 +68,6 @@ public class TModelProvider {
         }
         TModelProvider other = (TModelProvider) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getModelId() == null ? other.getModelId() == null : this.getModelId().equals(other.getModelId()))
             && (this.getProviderName() == null ? other.getProviderName() == null : this.getProviderName().equals(other.getProviderName()))
             && (this.getBaseUrl() == null ? other.getBaseUrl() == null : this.getBaseUrl().equals(other.getBaseUrl()))
             && (this.getPromptTemplate() == null ? other.getPromptTemplate() == null : this.getPromptTemplate().equals(other.getPromptTemplate()))
@@ -88,7 +82,6 @@ public class TModelProvider {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getModelId() == null) ? 0 : getModelId().hashCode());
         result = prime * result + ((getProviderName() == null) ? 0 : getProviderName().hashCode());
         result = prime * result + ((getBaseUrl() == null) ? 0 : getBaseUrl().hashCode());
         result = prime * result + ((getPromptTemplate() == null) ? 0 : getPromptTemplate().hashCode());
@@ -106,7 +99,6 @@ public class TModelProvider {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", modelId=").append(modelId);
         sb.append(", providerName=").append(providerName);
         sb.append(", baseUrl=").append(baseUrl);
         sb.append(", promptTemplate=").append(promptTemplate);

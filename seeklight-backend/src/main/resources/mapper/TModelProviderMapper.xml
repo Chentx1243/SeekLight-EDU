@@ -6,7 +6,6 @@
 
     <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TModelProvider">
             <id property="id" column="id" />
-            <result property="modelId" column="model_id" />
             <result property="providerName" column="provider_name" />
             <result property="baseUrl" column="base_url" />
             <result property="promptTemplate" column="prompt_template" />
@@ -17,7 +16,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,model_id,provider_name,base_url,prompt_template,status,
+        id,provider_name,base_url,prompt_template,status,
         is_deleted,created_at,updated_at
     </sql>
 </mapper>
