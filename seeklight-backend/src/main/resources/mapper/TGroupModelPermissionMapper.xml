@@ -7,13 +7,15 @@
     <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TGroupModelPermission">
             <id property="id" column="id" />
             <result property="groupId" column="group_id" />
+			<result property="groupName" column="group_name" />
             <result property="modelId" column="model_id" />
+			<result property="modelName" column="model_name" />
             <result property="visible" column="visible" />
             <result property="callable" column="callable" />
             <result property="isDeleted" column="is_deleted" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,group_id,model_id,visible,callable,is_deleted
+        id,group_id,group_name,model_id,model_name,visible,callable,is_deleted
     </sql>
 </mapper>

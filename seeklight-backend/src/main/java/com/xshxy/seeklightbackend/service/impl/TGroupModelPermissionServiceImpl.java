@@ -40,16 +40,19 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
             throw new BusinessException("模型ID不能为空");
         }
 
-        // 校验分组是否存在
+        // 校验分组是否存在并获取分组名称
         TGroup group = groupService.getById(permission.getGroupId());
         if (group == null) {
             throw new BusinessException("分组不存在");
         }
+        permission.setGroupName(group.getGroupName());
 
-        // 校验模型是否存在
-        if (modelService.getById(permission.getModelId()) == null) {
+        // 校验模型是否存在并获取模型名称
+        com.xshxy.seeklightbackend.domain.TModel model = modelService.getById(permission.getModelId());
+        if (model == null) {
             throw new BusinessException("模型不存在");
         }
+        permission.setModelName(model.getModelName());
 
         // 检查是否已存在相同的权限记录
         LambdaQueryWrapper<TGroupModelPermission> wrapper = new LambdaQueryWrapper<>();
@@ -74,7 +77,8 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
 
     @Override
     public Page<TGroupModelPermission> queryPermissions(Integer current, Integer size,
-                                                         Integer groupId, Integer modelId,
+                                                         Integer groupId, String groupName,
+                                                         Integer modelId, String modelName,
                                                          Integer visible, Integer callable) {
         Page<TGroupModelPermission> page = new Page<>(current, size);
         LambdaQueryWrapper<TGroupModelPermission> wrapper = new LambdaQueryWrapper<>();
@@ -82,8 +86,14 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
         if (groupId != null) {
             wrapper.eq(TGroupModelPermission::getGroupId, groupId);
         }
+        if (groupName != null && !groupName.trim().isEmpty()) {
+            wrapper.like(TGroupModelPermission::getGroupName, groupName.trim());
+        }
         if (modelId != null) {
             wrapper.eq(TGroupModelPermission::getModelId, modelId);
+        }
+        if (modelName != null && !modelName.trim().isEmpty()) {
+            wrapper.like(TGroupModelPermission::getModelName, modelName.trim());
         }
         if (visible != null) {
             wrapper.eq(TGroupModelPermission::getVisible, visible);
@@ -122,19 +132,24 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
             throw new BusinessException("权限记录不存在");
         }
 
-        // 如果修改了分组ID或模型ID，需要校验是否存在
+        // 如果修改了分组ID，需要校验是否存在并同步更新分组名称
         if (permission.getGroupId() != null && !permission.getGroupId().equals(existing.getGroupId())) {
-            if (groupService.getById(permission.getGroupId()) == null) {
+            TGroup group = groupService.getById(permission.getGroupId());
+            if (group == null) {
                 throw new BusinessException("分组不存在");
             }
             existing.setGroupId(permission.getGroupId());
+            existing.setGroupName(group.getGroupName());
         }
 
+        // 如果修改了模型ID，需要校验是否存在并同步更新模型名称
         if (permission.getModelId() != null && !permission.getModelId().equals(existing.getModelId())) {
-            if (modelService.getById(permission.getModelId()) == null) {
+            com.xshxy.seeklightbackend.domain.TModel model = modelService.getById(permission.getModelId());
+            if (model == null) {
                 throw new BusinessException("模型不存在");
             }
             existing.setModelId(permission.getModelId());
+            existing.setModelName(model.getModelName());
         }
 
         // 检查修改后的组合是否已存在

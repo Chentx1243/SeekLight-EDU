@@ -23,13 +23,16 @@ public interface TGroupModelPermissionService extends IService<TGroupModelPermis
      * @param current 当前页
      * @param size 每页大小
      * @param groupId 分组ID（可选）
+     * @param groupName 分组名称（可选）
      * @param modelId 模型ID（可选）
+     * @param modelName 模型名称（可选）
      * @param visible 是否可见（可选）
      * @param callable 是否可调用（可选）
      * @return 分页结果
      */
     Page<TGroupModelPermission> queryPermissions(Integer current, Integer size,
-                                                   Integer groupId, Integer modelId,
+                                                   Integer groupId, String groupName,
+                                                   Integer modelId, String modelName,
                                                    Integer visible, Integer callable);
 
     /**
