@@ -24,18 +24,15 @@ public class ChatEveController {
     /**
      * 流式对话接口
      * @param chatBody 对话请求体
-     * @param key 可选：V3平台-APIkey
      * @return
      */
 
     @PostMapping("/runs")
     @Operation(summary = "流式对话", description = "基于请求体与可选API Key进行SSE对话")
     public SseEmitter chatEveRuns(
-            @RequestBody ChatEveRequest chatBody,
-            @Parameter(description = "可选：平台API Key")
-            @RequestHeader(value = "Api-key", required = false) String key){
+            @RequestBody ChatEveRequest chatBody){
         SseEmitter emitter = emitterManager.getEmitter(chatBody.getUser());
-        return chatEveService.chat(emitter,chatBody,key);
+        return chatEveService.chat(emitter,chatBody);
     }
 
 

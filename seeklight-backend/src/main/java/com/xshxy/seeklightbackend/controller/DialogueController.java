@@ -39,7 +39,7 @@ public class DialogueController {
         }
         TDialogue dialogue = new TDialogue();
         dialogue.setUserId(user.getUserId());
-        dialogue.setModelId(1);
+        dialogue.setModelId(-1);
         dialogue.setTitle("");
         dialogueService.save(dialogue);
         return dialogue.getDialogueId();

@@ -54,7 +54,7 @@ public class ChatEveServiceImpl implements ChatEveService {
     private UserInfoService userInfoService;
 
     @Override
-    public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody, String key) {
+    public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody) {
         // 获取用户信息
         TUser user = userInfoService.getUser();
         // 获取分组
@@ -66,6 +66,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         if (modelEntity == null) {
             throw new BusinessException("模型不合法");
         }
+        // TODO 校验用户所在分组是否有权使用该模型
         String apiKey = group.getGroupApiKey();
         // 获取用户的提问
         List<ChatEveRequest.Message> messages = chatBody.getMessages();
@@ -74,6 +75,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         // 获取dialogueId
         Long dialogueId = chatBody.getDialogueId();
         // 构建模型组件（真正用于对话的模型核心）
+        // TODO 从供应商获取获取baseURL
         StreamingChatLanguageModel model = OpenAiStreamingChatModel.builder()
                 .baseUrl("https://api.vveai.com/v1")
                 .apiKey(apiKey)
