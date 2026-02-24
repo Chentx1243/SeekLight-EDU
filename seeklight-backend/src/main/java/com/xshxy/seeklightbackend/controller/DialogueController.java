@@ -48,7 +48,6 @@ public class DialogueController {
 
     /**
      * 获取dialogue列表
-     * @param userId 用户Id
      * @return 对话列表
      */
     @GetMapping("/history")
