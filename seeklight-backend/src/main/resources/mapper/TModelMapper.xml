@@ -11,7 +11,6 @@
             <result property="provider" column="provider" />
             <result property="modelKey" column="model_key" />
             <result property="status" column="status" />
-            <result property="groupId" column="group_id" />
             <result property="isDeleted" column="is_deleted" />
             <result property="createdAt" column="created_at" />
             <result property="updatedAt" column="updated_at" />

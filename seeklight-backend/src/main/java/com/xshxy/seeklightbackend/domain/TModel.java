@@ -44,11 +44,6 @@ public class TModel {
     private Integer status;
 
     /**
-     * 可用分组
-     */
-    private Integer groupId;
-
-    /**
      * 逻辑删除标记
      */
     @TableLogic
@@ -82,7 +77,6 @@ public class TModel {
             && (this.getProvider() == null ? other.getProvider() == null : this.getProvider().equals(other.getProvider()))
             && (this.getModelKey() == null ? other.getModelKey() == null : this.getModelKey().equals(other.getModelKey()))
             && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
-            && (this.getGroupId() == null ? other.getGroupId() == null : this.getGroupId().equals(other.getGroupId()))
             && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()))
             && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
             && (this.getUpdatedAt() == null ? other.getUpdatedAt() == null : this.getUpdatedAt().equals(other.getUpdatedAt()));
@@ -98,7 +92,6 @@ public class TModel {
         result = prime * result + ((getProvider() == null) ? 0 : getProvider().hashCode());
         result = prime * result + ((getModelKey() == null) ? 0 : getModelKey().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
-        result = prime * result + ((getGroupId() == null) ? 0 : getGroupId().hashCode());
         result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
         result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
         result = prime * result + ((getUpdatedAt() == null) ? 0 : getUpdatedAt().hashCode());
@@ -117,7 +110,6 @@ public class TModel {
         sb.append(", provider=").append(provider);
         sb.append(", modelKey=").append(modelKey);
         sb.append(", status=").append(status);
-        sb.append(", groupId=").append(groupId);
         sb.append(", isDeleted=").append(isDeleted);
         sb.append(", createdAt=").append(createdAt);
         sb.append(", updatedAt=").append(updatedAt);

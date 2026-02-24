@@ -45,14 +45,6 @@ public class ModelController {
         if (!StringUtils.hasText(request.getModelKey())) {
             throw new BusinessException("模型标识不能为空");
         }
-        Integer groupId = request.getGroupId();
-        if (groupId == null) {
-            throw new BusinessException("分组ID不能为空");
-        }
-        TGroup group = groupService.getById(groupId);
-        if (group == null) {
-            throw new BusinessException("分组不存在");
-        }
         Date now = new Date();
         TModel model = new TModel();
         model.setModelName(request.getModelName());
@@ -60,7 +52,6 @@ public class ModelController {
         model.setProvider(request.getProvider());
         model.setModelKey(request.getModelKey());
         model.setStatus(request.getStatus());
-        model.setGroupId(groupId);
         model.setIsDeleted(0);
         model.setCreatedAt(now);
         model.setUpdatedAt(now);
@@ -83,9 +74,6 @@ public class ModelController {
         }
         if (status != null) {
             queryWrapper.eq(TModel::getStatus, status);
-        }
-        if (groupId != null) {
-            queryWrapper.eq(TModel::getGroupId, groupId);
         }
         queryWrapper.orderByDesc(TModel::getCreatedAt);
         return Result.success(modelService.list(queryWrapper));
@@ -110,7 +98,6 @@ public class ModelController {
         if (status != null) {
             queryWrapper.eq(TModel::getStatus, status);
         }
-        queryWrapper.eq(TModel::getGroupId, user.getGroupId());
         queryWrapper.orderByDesc(TModel::getCreatedAt);
         return Result.success(modelService.list(queryWrapper));
     }
@@ -128,13 +115,6 @@ public class ModelController {
         TModel model = modelService.getById(modelId);
         if (model == null) {
             throw new BusinessException("模型不存在");
-        }
-        if (request.getGroupId() != null) {
-            TGroup group = groupService.getById(request.getGroupId());
-            if (group == null) {
-                throw new BusinessException("分组不存在");
-            }
-            model.setGroupId(request.getGroupId());
         }
         if (request.getModelName() != null) {
             if (!StringUtils.hasText(request.getModelName())) {
