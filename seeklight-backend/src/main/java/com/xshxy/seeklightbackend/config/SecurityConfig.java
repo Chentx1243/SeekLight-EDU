@@ -62,7 +62,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // 允许的跨域
-        config.setAllowedOrigins(List.of("http://localhost:5174"));
+        config.setAllowedOrigins(List.of("http://localhost:5174","http://localhost:5173"));
         // 允许的跨域请求方式
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // 允许的跨域携带的头
