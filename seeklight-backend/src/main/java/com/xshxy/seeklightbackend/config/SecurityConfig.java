@@ -38,7 +38,6 @@ public class SecurityConfig {
         http
                 .cors(cors ->{})
                 .csrf(csrf -> csrf.disable())
-
                 .authorizeHttpRequests(auth -> auth
                         //放行异步派发（SSE 完成/超时/错误会触发）
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()

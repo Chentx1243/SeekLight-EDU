@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TGroupModelPermission;
 import com.xshxy.seeklightbackend.exception.BusinessException;
+import com.xshxy.seeklightbackend.mapper.TModelMapper;
 import com.xshxy.seeklightbackend.service.TGroupModelPermissionService;
 import com.xshxy.seeklightbackend.service.TGroupService;
 import com.xshxy.seeklightbackend.service.TModelService;
@@ -26,7 +27,7 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
     private TGroupService groupService;
 
     @Resource
-    private TModelService modelService;
+    private TModelMapper modelMapper;
 
     @Override
     public TGroupModelPermission addPermission(TGroupModelPermission permission) {
@@ -48,7 +49,7 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
         permission.setGroupName(group.getGroupName());
 
         // 校验模型是否存在并获取模型名称
-        com.xshxy.seeklightbackend.domain.TModel model = modelService.getById(permission.getModelId());
+        com.xshxy.seeklightbackend.domain.TModel model = modelMapper.selectById(permission.getModelId());
         if (model == null) {
             throw new BusinessException("模型不存在");
         }
@@ -144,7 +145,7 @@ public class TGroupModelPermissionServiceImpl extends ServiceImpl<TGroupModelPer
 
         // 如果修改了模型ID，需要校验是否存在并同步更新模型名称
         if (permission.getModelId() != null && !permission.getModelId().equals(existing.getModelId())) {
-            com.xshxy.seeklightbackend.domain.TModel model = modelService.getById(permission.getModelId());
+            com.xshxy.seeklightbackend.domain.TModel model = modelMapper.selectById(permission.getModelId());
             if (model == null) {
                 throw new BusinessException("模型不存在");
             }

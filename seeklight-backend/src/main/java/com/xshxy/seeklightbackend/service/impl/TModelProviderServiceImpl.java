@@ -25,8 +25,6 @@ import java.util.List;
 public class TModelProviderServiceImpl extends ServiceImpl<TModelProviderMapper, TModelProvider>
     implements TModelProviderService{
 
-    @Resource
-    private TModelService modelService;
 
     @Override
     public TModelProvider createProvider(ProviderRequest request) {
