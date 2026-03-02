@@ -5,6 +5,7 @@ import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.*;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper;
+import com.xshxy.seeklightbackend.mapper.TGroupProviderCredentialMapper;
 import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.*;
@@ -55,6 +56,9 @@ public class ChatEveServiceImpl implements ChatEveService {
     @Resource
     private TModelProviderMapper providerMapper;
 
+    @Resource
+    private TGroupProviderCredentialMapper credentialMapper;
+
     @Override
     public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody) {
         // 获取用户信息
@@ -77,8 +81,16 @@ public class ChatEveServiceImpl implements ChatEveService {
             throw new BusinessException("当前用户所属分组没有该模型使用权限");
         }
 
+        // 从凭证表中获取当前用户的凭证key
+        LambdaQueryWrapper<TGroupProviderCredential> credentialWrapper = new LambdaQueryWrapper<>();
+        credentialWrapper.eq(TGroupProviderCredential::getGroupId,group.getGroupId());
+        credentialWrapper.eq(TGroupProviderCredential::getProviderId,modelEntity.getProvider());
+        TGroupProviderCredential credential = credentialMapper.selectOne(credentialWrapper);
+        if (credential == null) {
+            throw new BusinessException("当前用户没有该供应商的凭证，请先添加凭证（apikey未配置）");
+        }
 
-        String apiKey = group.getGroupApiKey();
+        String apiKey = credential.getApiKey();
         // 获取用户的提问
         List<ChatEveRequest.Message> messages = chatBody.getMessages();
         ChatEveRequest.Message message = messages.get(0);
