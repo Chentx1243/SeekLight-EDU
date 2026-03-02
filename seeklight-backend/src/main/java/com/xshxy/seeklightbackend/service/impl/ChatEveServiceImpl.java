@@ -2,11 +2,10 @@ package com.xshxy.seeklightbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
-import com.xshxy.seeklightbackend.domain.TDialogue;
-import com.xshxy.seeklightbackend.domain.TGroup;
-import com.xshxy.seeklightbackend.domain.TModel;
-import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.domain.*;
 import com.xshxy.seeklightbackend.exception.BusinessException;
+import com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper;
+import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.*;
 import dev.langchain4j.data.message.ChatMessage;
@@ -36,9 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatEveServiceImpl implements ChatEveService {
 
     @Resource
-    private TUserService userService;
-
-    @Resource
     private TGroupService groupService;
 
     @Resource
@@ -53,6 +49,12 @@ public class ChatEveServiceImpl implements ChatEveService {
     @Resource
     private UserInfoService userInfoService;
 
+    @Resource
+    private TGroupModelPermissionMapper permissionMapper;
+
+    @Resource
+    private TModelProviderMapper providerMapper;
+
     @Override
     public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody) {
         // 获取用户信息
@@ -66,7 +68,16 @@ public class ChatEveServiceImpl implements ChatEveService {
         if (modelEntity == null) {
             throw new BusinessException("模型不合法");
         }
-        // TODO 校验用户所在分组是否有权使用该模型
+        // 校验用户所在分组是否有权使用该模型
+        LambdaQueryWrapper<TGroupModelPermission> permissionWrapper = new LambdaQueryWrapper<>();
+        permissionWrapper.eq(TGroupModelPermission::getModelId,modelEntity.getModelId());
+        permissionWrapper.eq(TGroupModelPermission::getGroupId,group.getGroupId());
+        TGroupModelPermission permission = permissionMapper.selectOne(permissionWrapper);
+        if (permission == null) {
+            throw new BusinessException("当前用户所属分组没有该模型使用权限");
+        }
+
+
         String apiKey = group.getGroupApiKey();
         // 获取用户的提问
         List<ChatEveRequest.Message> messages = chatBody.getMessages();
@@ -75,9 +86,17 @@ public class ChatEveServiceImpl implements ChatEveService {
         // 获取dialogueId
         Long dialogueId = chatBody.getDialogueId();
         // 构建模型组件（真正用于对话的模型核心）
-        // TODO 从供应商获取获取baseURL
+        // 从供应商获取获取baseURL
+        // 根据模型信息，获取供应商信息
+        LambdaQueryWrapper<TModelProvider> providerWrapper = new LambdaQueryWrapper<>();
+        providerWrapper.eq(TModelProvider::getId,modelEntity.getProvider());
+        TModelProvider provider = providerMapper.selectOne(providerWrapper);
+        if (provider == null) {
+            throw new BusinessException("模型配置错误，请检查");
+        }
+
         StreamingChatLanguageModel model = OpenAiStreamingChatModel.builder()
-                .baseUrl("https://api.vveai.com/v1")
+                .baseUrl(provider.getBaseUrl())
                 .apiKey(apiKey)
                 .modelName(modelCode)
                 .build();
