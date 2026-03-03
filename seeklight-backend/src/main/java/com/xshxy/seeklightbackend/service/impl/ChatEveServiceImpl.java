@@ -15,7 +15,6 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.memory.chat.TokenWindowChatMemory;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
@@ -107,11 +106,12 @@ public class ChatEveServiceImpl implements ChatEveService {
             throw new BusinessException("模型配置错误，请检查");
         }
 
-        StreamingChatLanguageModel model = OpenAiStreamingChatModel.builder()
+        OpenAiStreamingChatModel model = OpenAiStreamingChatModel.builder()
                 .baseUrl(provider.getBaseUrl())
                 .apiKey(apiKey)
                 .modelName(modelCode)
                 .build();
+
 
         // 记忆组件
         ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
@@ -122,7 +122,7 @@ public class ChatEveServiceImpl implements ChatEveService {
 
         // 构建Ai服务
         AssistantService aiService = AiServices.builder(AssistantService.class)
-                .streamingChatLanguageModel(model)
+                .streamingChatModel(model)
                 .chatMemoryProvider(chatMemoryProvider)
                 .build();
 

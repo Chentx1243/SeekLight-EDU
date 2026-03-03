@@ -61,13 +61,13 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.11.0</version>
         </dependency>
 <!--        langchain4j的高级api依赖-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>1.0.0-beta3</version>
+            <version>1.11.0</version>
         </dependency>
 <!--        springSecuryty依赖-->
         <dependency>
