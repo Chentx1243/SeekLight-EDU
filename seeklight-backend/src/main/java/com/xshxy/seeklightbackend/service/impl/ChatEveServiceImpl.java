@@ -7,20 +7,14 @@ import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper;
 import com.xshxy.seeklightbackend.mapper.TGroupProviderCredentialMapper;
 import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
-import com.xshxy.seeklightbackend.request.ChatEveRequest;
+import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.*;
-import dev.langchain4j.data.message.ChatMessage;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.memory.chat.TokenWindowChatMemory;
 import dev.langchain4j.model.chat.response.ChatResponse;
-import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.TokenStream;
-import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service

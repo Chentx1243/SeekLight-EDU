@@ -1,4 +1,4 @@
-package com.xshxy.seeklightbackend.request;
+package com.xshxy.seeklightbackend.domain.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

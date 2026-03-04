@@ -2,7 +2,7 @@ package com.xshxy.seeklightbackend.controller;
 
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TModelProvider;
-import com.xshxy.seeklightbackend.request.ProviderRequest;
+import com.xshxy.seeklightbackend.domain.request.ProviderRequest;
 import com.xshxy.seeklightbackend.service.TModelProviderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

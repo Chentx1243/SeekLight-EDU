@@ -1,6 +1,6 @@
 package com.xshxy.seeklightbackend.service;
 
-import com.xshxy.seeklightbackend.request.ChatEveRequest;
+import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 

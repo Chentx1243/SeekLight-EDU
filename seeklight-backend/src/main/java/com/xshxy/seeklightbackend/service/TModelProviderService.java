@@ -1,7 +1,7 @@
 package com.xshxy.seeklightbackend.service;
 
 import com.xshxy.seeklightbackend.domain.TModelProvider;
-import com.xshxy.seeklightbackend.request.ProviderRequest;
+import com.xshxy.seeklightbackend.domain.request.ProviderRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

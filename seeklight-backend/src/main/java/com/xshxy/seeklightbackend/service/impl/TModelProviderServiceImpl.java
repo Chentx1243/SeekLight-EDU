@@ -2,14 +2,11 @@ package com.xshxy.seeklightbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xshxy.seeklightbackend.domain.TModel;
 import com.xshxy.seeklightbackend.domain.TModelProvider;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
-import com.xshxy.seeklightbackend.request.ProviderRequest;
+import com.xshxy.seeklightbackend.domain.request.ProviderRequest;
 import com.xshxy.seeklightbackend.service.TModelProviderService;
-import com.xshxy.seeklightbackend.service.TModelService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

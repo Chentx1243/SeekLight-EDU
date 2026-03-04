@@ -1,11 +1,10 @@
 package com.xshxy.seeklightbackend.controller;
 
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
-import com.xshxy.seeklightbackend.request.ChatEveRequest;
+import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.ChatEveService;
 import com.xshxy.seeklightbackend.service.IntentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
