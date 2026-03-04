@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
 import com.xshxy.seeklightbackend.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.ChatEveService;
+import com.xshxy.seeklightbackend.service.IntentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,9 @@ public class ChatEveController {
     @Resource
     private ChatEveService chatEveService;
 
+    @Resource
+    private IntentService intentService;
+
     /**
      * 流式对话接口
      * @param chatBody 对话请求体
@@ -33,6 +37,16 @@ public class ChatEveController {
             @RequestBody ChatEveRequest chatBody){
         SseEmitter emitter = emitterManager.getEmitter(chatBody.getUser());
         return chatEveService.chat(emitter,chatBody);
+    }
+
+    /**
+     * 用于测试Aiservice的controller入口
+     */
+    @PostMapping("/test")
+    public String test(@RequestBody String body){
+        String value = intentService.chat("做一下自我介绍");
+        System.out.println("模型相应："+value);
+        return body;
     }
 
 

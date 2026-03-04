@@ -23,3 +23,11 @@ mybatis-plus:
       logic-delete-field: is_deleted # 全局逻辑删除字段名
       logic-delete-value: 1 # 逻辑已删除值。可选，默认值为 1
       logic-not-delete-value: 0 # 逻辑未删除值。可选，默认值为 0
+ai:
+  models:
+    configs:
+      deepseek:
+        api-key: sk-a2e3dff5d42146bea3fadbef0ba384fb
+        base-url: https://api.deepseek.com
+        model-name: deepseek-chat
+        temperature: 0.7

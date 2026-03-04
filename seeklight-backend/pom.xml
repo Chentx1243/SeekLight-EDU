@@ -57,17 +57,28 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--           langchain4j的openai兼容依赖-->
+<!--&lt;!&ndash;           langchain4j的openai兼容依赖&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-open-ai</artifactId>-->
+<!--            <version>1.11.0</version>-->
+<!--        </dependency>-->
+<!--&lt;!&ndash;        langchain4j的高级api依赖&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j</artifactId>-->
+<!--            <version>1.11.0</version>-->
+<!--        </dependency>-->
+<!--        langchain4jspringBoot集成-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-open-ai</artifactId>
-            <version>1.11.0</version>
+            <artifactId>langchain4j-spring-boot-starter</artifactId>
+            <version>1.11.0-beta19</version>
         </dependency>
-<!--        langchain4j的高级api依赖-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j</artifactId>
-            <version>1.11.0</version>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+            <version>1.11.0-beta19</version>
         </dependency>
 <!--        springSecuryty依赖-->
         <dependency>
