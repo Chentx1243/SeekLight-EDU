@@ -23,6 +23,7 @@ Run these from `seeklight-backend/` unless noted.
 - Packages use `com.xshxy.seeklightbackend`.
 - Classes: PascalCase; methods/fields: camelCase; constants: UPPER_SNAKE_CASE.
 - MyBatis mapper XMLs live in `src/main/resources/mapper` and should match mapper interfaces.
+- Use English for code comments and exception message strings.
 
 ## Testing Guidelines
 - Framework: JUnit Jupiter via `spring-boot-starter-test`.

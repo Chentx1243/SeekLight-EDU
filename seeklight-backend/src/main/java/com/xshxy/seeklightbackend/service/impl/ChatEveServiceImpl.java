@@ -107,25 +107,6 @@ public class ChatEveServiceImpl implements ChatEveService {
             throw new BusinessException("模型配置错误，请检查");
         }
 
-        OpenAiStreamingChatModel model = OpenAiStreamingChatModel.builder()
-                .baseUrl(provider.getBaseUrl())
-                .apiKey(apiKey)
-                .modelName(modelCode)
-                .build();
-
-
-        // 记忆组件
-        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
-                .id(memoryId)
-                .chatMemoryStore(store)
-                .maxMessages(5)
-                .build();
-
-        // 构建Ai服务
-        AssistantService aiService = AiServices.builder(AssistantService.class)
-                .streamingChatModel(model)
-                .chatMemoryProvider(chatMemoryProvider)
-                .build();
 
         // 判断是否第一次发起对话
         TDialogue dialogue = dialogueService.getById(dialogueId);
@@ -146,7 +127,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         }
 
         // 拼接提示词阶段
-        StringBuilder promptBuilder = new StringBuilder();
+        StringBuilder systemPromptBuilder = new StringBuilder();
 
         // 联网搜索参数
         if (chatBody.getSearch()){
@@ -155,18 +136,38 @@ public class ChatEveServiceImpl implements ChatEveService {
             // 调用联网搜索接口
             BaiduSearchResponse searchResult = baiduSearchService.search(intention.getQuery());
             String searchContent = searchResult.getReferences().toString();
-            promptBuilder.append("请使用网络检索到的资料：")
+            systemPromptBuilder.append("请使用网络检索到的资料：")
                     .append(searchContent)
-                    .append("回答用户问题：")
-                    .append(userContent);
-            log.info("触发联网检索，检索关键字是：{}，检索到的内是：{}，最终的提示词是：{}", intention.getQuery(), searchResult, promptBuilder);
+                    .append("回答用户问题");
+            log.info("触发联网检索，检索关键字是：{}，检索到的内是：{}，最终的提示词是：{}", intention.getQuery(), searchResult, systemPromptBuilder);
         }else {
-            promptBuilder.append(userContent);
+            systemPromptBuilder.append("你是一个智能助手，需要帮助用户完成工作与学习；");
         }
 
         // 利用Ai服务发起对话请求
+        OpenAiStreamingChatModel model = OpenAiStreamingChatModel.builder()
+                .baseUrl(provider.getBaseUrl())
+                .apiKey(apiKey)
+                .modelName(modelCode)
+                .build();
+
+
+        // 记忆组件
+        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .chatMemoryStore(store)
+                .maxMessages(5)
+                .build();
+
+        // 构建Ai服务
+        AssistantService aiService = AiServices.builder(AssistantService.class)
+                .streamingChatModel(model)
+                .chatMemoryProvider(chatMemoryProvider)
+                .systemMessage(systemPromptBuilder.toString())
+                .build();
+
         Long memoryId = chatBody.getDialogueId();
-        TokenStream tokenRespond = aiService.chat(memoryId,promptBuilder.toString());
+        TokenStream tokenRespond = aiService.chat(memoryId,userContent);
         // 注册流式行为
         tokenRespond.onPartialResponse((String partialResponse) -> {
                     try {
