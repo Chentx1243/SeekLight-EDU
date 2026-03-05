@@ -3,6 +3,8 @@ package com.xshxy.seeklightbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.*;
+import com.xshxy.seeklightbackend.domain.resp.BaiduSearchResponse;
+import com.xshxy.seeklightbackend.domain.resp.netIntentionResult;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper;
 import com.xshxy.seeklightbackend.mapper.TGroupProviderCredentialMapper;
@@ -50,6 +52,12 @@ public class ChatEveServiceImpl implements ChatEveService {
 
     @Resource
     private TGroupProviderCredentialMapper credentialMapper;
+
+    @Resource
+    private IntentService intentService;
+
+    @Resource
+    private BaiduSearchService baiduSearchService;
 
     @Override
     public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody) {
@@ -137,9 +145,28 @@ public class ChatEveServiceImpl implements ChatEveService {
             dialogueService.updateById(dialogue);
         }
 
+        // 拼接提示词阶段
+        StringBuilder promptBuilder = new StringBuilder();
+
+        // 联网搜索参数
+        if (chatBody.getSearch()){
+            // 意图识别：是否需要联网，联网所需要搜索的关键词
+            netIntentionResult intention = intentService.intention(userContent);
+            // 调用联网搜索接口
+            BaiduSearchResponse searchResult = baiduSearchService.search(intention.getQuery());
+            String searchContent = searchResult.getReferences().toString();
+            promptBuilder.append("请使用网络检索到的资料：")
+                    .append(searchContent)
+                    .append("回答用户问题：")
+                    .append(userContent);
+            log.info("触发联网检索，检索关键字是：{}，检索到的内是：{}，最终的提示词是：{}", intention.getQuery(), searchResult, promptBuilder);
+        }else {
+            promptBuilder.append(userContent);
+        }
+
         // 利用Ai服务发起对话请求
         Long memoryId = chatBody.getDialogueId();
-        TokenStream tokenRespond = aiService.chat(memoryId,userContent);
+        TokenStream tokenRespond = aiService.chat(memoryId,promptBuilder.toString());
         // 注册流式行为
         tokenRespond.onPartialResponse((String partialResponse) -> {
                     try {

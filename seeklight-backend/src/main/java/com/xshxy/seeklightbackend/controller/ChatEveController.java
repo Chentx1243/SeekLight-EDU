@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.controller;
 
+import com.xshxy.seeklightbackend.domain.resp.netIntentionResult;
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
 import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.ChatEveService;
@@ -24,6 +25,7 @@ public class ChatEveController {
     @Resource
     private IntentService intentService;
 
+
     /**
      * 流式对话接口
      * @param chatBody 对话请求体
@@ -43,9 +45,9 @@ public class ChatEveController {
      */
     @PostMapping("/test")
     public String test(@RequestBody String body){
-        String value = intentService.chat("做一下自我介绍");
-        System.out.println("模型相应："+value);
-        return body;
+        netIntentionResult value = intentService.intention(body);
+        System.out.println("模型相应："+value.toString());
+        return value.toString();
     }
 
 

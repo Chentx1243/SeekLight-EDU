@@ -31,3 +31,19 @@ ai:
         base-url: https://api.deepseek.com
         model-name: deepseek-chat
         temperature: 0.7
+
+# 百度搜索配置
+baidu:
+  search:
+    # 百度千帆平台 API Key（请替换为实际的API Key）
+    api-key: bce-v3/ALTAK-X24YjvJZBrUUh337d1vQ6/e5dfbcad2cc521ad063eaf0f04fecf831a8c8f55
+    # 搜索版本：standard（完整版本）或 lite（标准版本，时延更好）
+    edition: standard
+    # 默认搜索结果数量
+    default-top-k: 5
+    # 是否启用安全搜索
+    safe-search: false
+    # 连接超时时间（毫秒）
+    connect-timeout: 30000
+    # 读取超时时间（毫秒）
+    read-timeout: 60000

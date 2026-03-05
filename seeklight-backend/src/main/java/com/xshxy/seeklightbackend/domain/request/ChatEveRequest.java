@@ -30,8 +30,8 @@ public class ChatEveRequest {
     @Schema(description = "是否流式返回")
     private Boolean stream;
 
-    @Schema(description = "深度思考开关")
-    private Boolean thinking;
+    @Schema(description = "联网搜索开关")
+    private Boolean search = false;
 
     @Schema(name = "ChatEveMessage", description = "聊天消息")
     @Data
