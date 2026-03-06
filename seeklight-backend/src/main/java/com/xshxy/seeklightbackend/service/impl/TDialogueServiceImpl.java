@@ -7,9 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.DeleteResult;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
+import com.xshxy.seeklightbackend.domain.dto.MessageDTO;
 import com.xshxy.seeklightbackend.service.TDialogueService;
 import com.xshxy.seeklightbackend.mapper.TDialogueMapper;
+import com.xshxy.seeklightbackend.util.MessageConverter;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
 import jakarta.annotation.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJson;
 
 /**
 * @author 陈凯宁
@@ -56,7 +61,7 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
     }
 
     @Override
-    public List<ChatMessage> getChatHistory(Long dialogueId) {
+    public List<MessageDTO> getChatHistory(Long dialogueId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(dialogueId));
         Map one = mongoTemplate.findOne(query, Map.class, HISTORY);
@@ -65,12 +70,17 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
         }
         String historyJson = (String) one.get("messages");
         List<ChatMessage> chatHistoryList = null;
+        List<MessageDTO> messageDTOS = null;
         try {
-            chatHistoryList = objectMapper.readValue(historyJson, List.class);
-        } catch (JsonProcessingException e) {
+            chatHistoryList = messagesFromJson(historyJson);
+            // 遍历集合，去除所有的system记录instansof
+            chatHistoryList.removeIf(chatMessage -> chatMessage instanceof SystemMessage);
+            // 转化为DTO返回给前端
+            messageDTOS = MessageConverter.converterMessageList(chatHistoryList);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return chatHistoryList;
+        return messageDTOS;
     }
 
     @Override

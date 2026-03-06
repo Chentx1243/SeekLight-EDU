@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.service;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xshxy.seeklightbackend.domain.dto.MessageDTO;
 import dev.langchain4j.data.message.ChatMessage;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface TDialogueService extends IService<TDialogue> {
      * @param dialogueId 对话id
      * @return 对话列表
      */
-    List<ChatMessage> getChatHistory(Long dialogueId);
+    List<MessageDTO> getChatHistory(Long dialogueId);
 
     /**
      * 根据对话id删除对话

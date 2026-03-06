@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TDialogue;
 import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.domain.dto.MessageDTO;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TDialogueService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
@@ -101,28 +102,28 @@ public class DialogueController {
 
     @GetMapping("/chatHistory")
     @Operation(summary = "查询对话详情", description = "根据对话ID获取对话消息列表")
-    public List<ChatMessage> getChatHistory(
+    public Result<List<MessageDTO>> getChatHistory(
             @Parameter(description = "对话ID", required = true)
             @RequestParam("dialogueId") Long dialogueId){
         // 获取当前登录用户
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {
-            return List.of();
+            return Result.failure("用户未登录");
         }
 
         // 查询对话信息并校验权限
         TDialogue dialogue = dialogueService.getById(dialogueId);
         if (dialogue == null) {
-            return List.of();
+            return Result.failure("对话不存在");
         }
 
         // 校验对话是否属于当前用户
         if (!dialogue.getUserId().equals(user.getUserId())) {
-            return List.of();
+            return Result.failure("无权查看该对话");
         }
 
         // 执行查询操作
-        return dialogueService.getChatHistory(dialogueId);
+        return Result.success(dialogueService.getChatHistory(dialogueId));
     }
 
 
