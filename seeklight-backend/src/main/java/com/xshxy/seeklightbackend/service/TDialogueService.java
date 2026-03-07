@@ -11,7 +11,7 @@ import java.util.List;
 /**
 * @author 陈凯宁
 * @description 针对表【t_dialogue(用户会话表)】的数据库操作Service
-* @createDate 2025-08-30 16:19:12
+* @createDate 2026-03-07 17:48:56
 */
 public interface TDialogueService extends IService<TDialogue> {
 

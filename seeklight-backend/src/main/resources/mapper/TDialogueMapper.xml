@@ -12,10 +12,11 @@
             <result property="isDeleted" column="is_deleted" />
             <result property="createdAt" column="created_at" />
             <result property="updatedAt" column="updated_at" />
+            <result property="fileId" column="file_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
         dialogue_id,user_id,model_id,title,is_deleted,created_at,
-        updated_at
+        updated_at,file_id
     </sql>
 </mapper>

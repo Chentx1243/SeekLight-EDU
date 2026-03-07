@@ -1,7 +1,9 @@
 package com.xshxy.seeklightbackend.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import lombok.Data;
 
@@ -36,7 +38,6 @@ public class TDialogue {
     /**
      * 逻辑删除标记
      */
-    @TableLogic
     private Integer isDeleted;
 
     /**
@@ -48,6 +49,11 @@ public class TDialogue {
      * 更新时间
      */
     private Date updatedAt;
+
+    /**
+     * 参考文件id
+     */
+    private Integer fileId;
 
     @Override
     public boolean equals(Object that) {
@@ -67,7 +73,8 @@ public class TDialogue {
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
             && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()))
             && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
-            && (this.getUpdatedAt() == null ? other.getUpdatedAt() == null : this.getUpdatedAt().equals(other.getUpdatedAt()));
+            && (this.getUpdatedAt() == null ? other.getUpdatedAt() == null : this.getUpdatedAt().equals(other.getUpdatedAt()))
+            && (this.getFileId() == null ? other.getFileId() == null : this.getFileId().equals(other.getFileId()));
     }
 
     @Override
@@ -81,6 +88,7 @@ public class TDialogue {
         result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
         result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
         result = prime * result + ((getUpdatedAt() == null) ? 0 : getUpdatedAt().hashCode());
+        result = prime * result + ((getFileId() == null) ? 0 : getFileId().hashCode());
         return result;
     }
 
@@ -97,6 +105,7 @@ public class TDialogue {
         sb.append(", isDeleted=").append(isDeleted);
         sb.append(", createdAt=").append(createdAt);
         sb.append(", updatedAt=").append(updatedAt);
+        sb.append(", fileId=").append(fileId);
         sb.append("]");
         return sb.toString();
     }

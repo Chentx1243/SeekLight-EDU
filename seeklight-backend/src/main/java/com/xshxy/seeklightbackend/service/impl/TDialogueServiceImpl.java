@@ -29,7 +29,7 @@ import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJ
 /**
 * @author 陈凯宁
 * @description 针对表【t_dialogue(用户会话表)】的数据库操作Service实现
-* @createDate 2025-08-30 16:19:12
+* @createDate 2026-03-07 17:48:56
 */
 @Service
 public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue>
