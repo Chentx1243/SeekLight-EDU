@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xshxy.seeklightbackend.mapper.TFileContentMapper">
+
+    <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TFileContent">
+            <id property="id" column="id" />
+            <result property="fileName" column="file_name" />
+            <result property="content" column="content" />
+            <result property="ownerId" column="owner_id" />
+            <result property="isDeleted" column="is_deleted" />
+            <result property="createdAt" column="created_at" />
+            <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,file_name,content,owner_id,is_deleted,created_at,
+        updated_at
+    </sql>
+</mapper>
