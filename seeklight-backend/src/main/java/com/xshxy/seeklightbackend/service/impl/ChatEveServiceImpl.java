@@ -6,6 +6,7 @@ import com.xshxy.seeklightbackend.domain.*;
 import com.xshxy.seeklightbackend.domain.resp.BaiduSearchResponse;
 import com.xshxy.seeklightbackend.domain.resp.netIntentionResult;
 import com.xshxy.seeklightbackend.exception.BusinessException;
+import com.xshxy.seeklightbackend.mapper.TFileContentMapper;
 import com.xshxy.seeklightbackend.mapper.TGroupModelPermissionMapper;
 import com.xshxy.seeklightbackend.mapper.TGroupProviderCredentialMapper;
 import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
@@ -58,6 +59,9 @@ public class ChatEveServiceImpl implements ChatEveService {
 
     @Resource
     private BaiduSearchService baiduSearchService;
+
+    @Resource
+    private TFileContentMapper fileContentMapper;
 
     @Override
     public SseEmitter chat(SseEmitter emitter, ChatEveRequest chatBody) {
@@ -129,19 +133,34 @@ public class ChatEveServiceImpl implements ChatEveService {
         // 拼接提示词阶段
         StringBuilder systemPromptBuilder = new StringBuilder();
 
-        // 联网搜索参数
         if (chatBody.getSearch()){
+            // 联网搜索参数
             // 意图识别：是否需要联网，联网所需要搜索的关键词
             netIntentionResult intention = intentService.intention(userContent);
             // 调用联网搜索接口
             BaiduSearchResponse searchResult = baiduSearchService.search(intention.getQuery());
             String searchContent = searchResult.getReferences().toString();
-            systemPromptBuilder.append("请使用网络检索到的资料：")
-                    .append(searchContent)
-                    .append("回答用户问题");
-            log.info("触发联网检索，检索关键字是：{}，检索到的内是：{}，最终的提示词是：{}", intention.getQuery(), searchResult, systemPromptBuilder);
-        }else {
-            systemPromptBuilder.append("你是一个智能助手，需要帮助用户完成工作与学习；");
+            systemPromptBuilder.append("# 你是用户的工程师助理，需要帮助用户完成工作与学习，下面是一些可参考信息的补充")
+                    .append("## 调用联网检索工具查询到的信息：")
+                    .append(searchContent);
+//            log.info("触发联网检索，检索关键字是：{}，检索到的内是：{}，最终的提示词是：{}", intention.getQuery(), searchResult, systemPromptBuilder);
+        }else if (chatBody.getFileId() != null ){
+            // 文件问答参数
+            // 尝试从数据库中根据文件id获取文件内容
+            LambdaQueryWrapper<TFileContent> contentWrapper = new LambdaQueryWrapper<>();
+            contentWrapper.eq(TFileContent::getId, chatBody.getFileId()).eq(TFileContent::getOwnerId,user.getUserId());
+            TFileContent chatFile = fileContentMapper.selectOne(contentWrapper);
+            if (chatFile == null || chatFile.getContent().isBlank()){
+                throw new BusinessException("文件不存在或当前用户没有文件权限");
+            }
+            // 文件内容加入到系统提示词中
+            systemPromptBuilder.append("## 调用文件解析工具获得的内容：").append(chatFile.getContent());
+            // 将当前对话与参考文件绑定
+            dialogue.setFileId(chatFile.getId());
+            dialogueService.updateById( dialogue);
+        }
+        else {
+            systemPromptBuilder.append("你是一个工程师助理，需要帮助用户完成工作与学习；");
         }
 
         // 利用Ai服务发起对话请求
@@ -149,6 +168,7 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .baseUrl(provider.getBaseUrl())
                 .apiKey(apiKey)
                 .modelName(modelCode)
+                .temperature(0.89)
                 .build();
 
 

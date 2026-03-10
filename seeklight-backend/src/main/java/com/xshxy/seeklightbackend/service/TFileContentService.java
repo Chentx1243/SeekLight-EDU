@@ -2,6 +2,7 @@ package com.xshxy.seeklightbackend.service;
 
 import com.xshxy.seeklightbackend.domain.TFileContent;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author 陈凯宁
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TFileContentService extends IService<TFileContent> {
 
+    Integer parseFile(MultipartFile file);
 }

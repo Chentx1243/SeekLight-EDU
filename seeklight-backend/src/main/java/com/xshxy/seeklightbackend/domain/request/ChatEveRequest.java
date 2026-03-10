@@ -33,6 +33,9 @@ public class ChatEveRequest {
     @Schema(description = "联网搜索开关")
     private Boolean search = false;
 
+    @Schema(description = "文件问答：文件id")
+    private Integer fileId;
+
     @Schema(name = "ChatEveMessage", description = "聊天消息")
     @Data
     public static class Message {
