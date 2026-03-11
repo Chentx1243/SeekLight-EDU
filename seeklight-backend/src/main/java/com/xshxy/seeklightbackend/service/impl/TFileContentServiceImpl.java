@@ -1,7 +1,6 @@
 package com.xshxy.seeklightbackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TFileContent;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
@@ -10,17 +9,8 @@ import com.xshxy.seeklightbackend.mapper.TFileContentMapper;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import com.xshxy.seeklightbackend.util.DocumentParseUtil;
 import jakarta.annotation.Resource;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Objects;
 
 /**
 * @author 陈凯宁
@@ -33,6 +23,9 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private TFileContentMapper fileContentMapper;
 
     @Override
     public Integer parseFile(MultipartFile file) {
@@ -74,6 +67,22 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
         }catch (Exception e){
             throw new BusinessException("文件处理失败：" + fileName + e);
         }
+    }
+
+    @Override
+    public String getFileNameById(Integer fileId) {
+        if (fileId == null) {
+            throw new BusinessException("文件ID不能为空");
+        }
+        TUser user = userInfoService.getUser();
+        if (user == null || user.getUserId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        String fileName = fileContentMapper.selectFileNameByIdAndOwner(fileId, user.getUserId());
+        if (fileName == null || fileName.isBlank()) {
+            throw new BusinessException("文件不存在或当前用户没有文件权限");
+        }
+        return fileName;
     }
 }
 

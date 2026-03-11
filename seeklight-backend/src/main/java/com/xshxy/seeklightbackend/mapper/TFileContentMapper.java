@@ -2,6 +2,7 @@ package com.xshxy.seeklightbackend.mapper;
 
 import com.xshxy.seeklightbackend.domain.TFileContent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 陈凯宁
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface TFileContentMapper extends BaseMapper<TFileContent> {
 
+    String selectFileNameByIdAndOwner(@Param("fileId") Integer fileId, @Param("ownerId") Integer ownerId);
 }
 
 

@@ -18,4 +18,13 @@
         id,file_name,content,owner_id,is_deleted,created_at,
         updated_at
     </sql>
+
+    <select id="selectFileNameByIdAndOwner" resultType="java.lang.String">
+        select file_name
+        from t_file_content
+        where id = #{fileId}
+          and owner_id = #{ownerId}
+          and is_deleted = 0
+        limit 1
+    </select>
 </mapper>

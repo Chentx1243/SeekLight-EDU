@@ -12,4 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface TFileContentService extends IService<TFileContent> {
 
     Integer parseFile(MultipartFile file);
+
+    String getFileNameById(Integer fileId);
 }
