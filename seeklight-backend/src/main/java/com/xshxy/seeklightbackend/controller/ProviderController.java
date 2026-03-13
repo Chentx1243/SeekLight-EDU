@@ -8,11 +8,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Tag(name = "供应商管理")
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/provider")
 public class ProviderController {
@@ -28,32 +38,32 @@ public class ProviderController {
     }
 
     @GetMapping
-    @Operation(summary = "查询供应商列表", description = "支持按名称模糊匹配、状态和模型ID筛选")
+    @Operation(summary = "查询供应商列表", description = "支持按名称模糊匹配、状态和模型 ID 筛选")
     public Result<List<TModelProvider>> listProviders(
-            @Parameter(description = "供应商名称（模糊匹配）")
+            @Parameter(description = "供应商名称，模糊匹配")
             @RequestParam(value = "providerName", required = false) String providerName,
-            @Parameter(description = "供应商状态：1启用，0禁用")
+            @Parameter(description = "供应商状态，1 启用，0 禁用")
             @RequestParam(value = "status", required = false) Integer status) {
         List<TModelProvider> providers = modelProviderService.listProviders(providerName, status);
         return Result.success(providers);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "查询单个供应商", description = "根据ID查询供应商详细信息")
+    @Operation(summary = "查询单个供应商", description = "根据 ID 查询供应商详细信息")
     public Result<TModelProvider> getProvider(@PathVariable Integer id) {
         TModelProvider provider = modelProviderService.getProviderById(id);
         return Result.success(provider);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "修改供应商", description = "按供应商ID更新供应商信息")
+    @Operation(summary = "修改供应商", description = "按供应商 ID 更新供应商信息")
     public Result<TModelProvider> updateProvider(@PathVariable Integer id, @RequestBody ProviderRequest request) {
         TModelProvider provider = modelProviderService.updateProvider(id, request);
         return Result.success(provider);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除供应商", description = "按供应商ID删除供应商")
+    @Operation(summary = "删除供应商", description = "按供应商 ID 删除供应商")
     public Result<String> deleteProvider(@PathVariable Integer id) {
         boolean removed = modelProviderService.deleteProvider(id);
         if (!removed) {
