@@ -82,6 +82,7 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
         if (fileName == null || fileName.isBlank()) {
             throw new BusinessException("文件不存在或当前用户没有文件权限");
         }
+
         return fileName;
     }
 }
