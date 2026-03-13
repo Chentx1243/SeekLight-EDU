@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.service.impl;
 
+import com.xshxy.seeklightbackend.constant.SecurityRoles;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.mapper.TUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         TUser user = userMapper.selectByAccount(username);
 
         if (user == null || user.getIsDeleted() == 1 || user.getEnabled() == 0) {
-            throw new UsernameNotFoundException("用户不存在或已禁用");
+            throw new UsernameNotFoundException("User does not exist or has been disabled");
         }
 
-        // 把数据库 role 映射成 Spring Security 角色
         List<GrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority(user.getRole())
+                new SimpleGrantedAuthority(SecurityRoles.normalize(user.getRole()))
         );
 
         return org.springframework.security.core.userdetails.User.builder()
