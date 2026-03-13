@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TModel;
 import com.xshxy.seeklightbackend.domain.dto.ModelDto;
+import com.xshxy.seeklightbackend.domain.request.CreateModelRequest;
 import com.xshxy.seeklightbackend.service.TModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,8 +33,14 @@ public class ModelController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "新增模型", description = "新增模型并校验所属分组存在")
-    public Result<TModel> createModel(@RequestBody TModel request) {
-        TModel model = modelService.createModelWithValidation(request);
+    public Result<TModel> createModel(@RequestBody CreateModelRequest request) {
+        TModel createRequest = new TModel();
+        createRequest.setModelName(request.getModelName());
+        createRequest.setDescription(request.getDescription());
+        createRequest.setProvider(request.getProvider());
+        createRequest.setModelKey(request.getModelKey());
+        createRequest.setStatus(request.getStatus());
+        TModel model = modelService.createModelWithValidation(createRequest);
         return Result.success(model);
     }
 

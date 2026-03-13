@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TGroupModelPermission;
+import com.xshxy.seeklightbackend.domain.request.AddModelPermissionRequest;
 import com.xshxy.seeklightbackend.service.TGroupModelPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -30,7 +31,12 @@ public class ModelPermissionController {
 
     @PostMapping
     @Operation(summary = "添加权限", description = "为某个用户组添加某个模型的权限，groupName 和 modelName 会根据 groupId 和 modelId 自动填充")
-    public Result<TGroupModelPermission> addPermission(@RequestBody TGroupModelPermission permission) {
+    public Result<TGroupModelPermission> addPermission(@RequestBody AddModelPermissionRequest request) {
+        TGroupModelPermission permission = new TGroupModelPermission();
+        permission.setGroupId(request.getGroupId());
+        permission.setModelId(request.getModelId());
+        permission.setVisible(request.getVisible());
+        permission.setCallable(request.getCallable());
         TGroupModelPermission result = permissionService.addPermission(permission);
         return Result.success(result);
     }
