@@ -47,3 +47,10 @@ baidu:
     connect-timeout: 30000
     # 读取超时时间（毫秒）
     read-timeout: 60000
+
+storage:
+  minio:
+    endpoint: ${MINIO_ENDPOINT:https://objectstorageapi.bja.sealos.run}
+    access-key: ${MINIO_ACCESS_KEY:z74d26ai}
+    secret-key: ${MINIO_SECRET_KEY:zrfz6mwcbwz89f28}
+    bucket: ${MINIO_KB_BUCKET:z74d26ai-kb-files}

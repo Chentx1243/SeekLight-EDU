@@ -2,6 +2,9 @@ package com.xshxy.seeklightbackend.service;
 
 import com.xshxy.seeklightbackend.domain.TKbFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import java.io.InputStream;
+import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author 陈凯宁
@@ -10,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TKbFileService extends IService<TKbFile> {
 
+    TKbFile uploadKbFile(Integer kbId, MultipartFile file);
+
+    List<TKbFile> listKbFiles(Integer kbId);
+
+    void deleteKbFile(Integer fileId);
+
+    InputStream getKbFileStream(Integer fileId);
 }

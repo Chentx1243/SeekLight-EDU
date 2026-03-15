@@ -1,9 +1,7 @@
 package com.xshxy.seeklightbackend.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
 import lombok.Data;
 
@@ -53,6 +51,7 @@ public class TKbFile {
     /**
      * 逻辑删除标记（0=未删除，1=已删除）
      */
+    @TableLogic
     private Integer isDeleted;
 
     /**
