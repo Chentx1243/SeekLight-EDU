@@ -2,15 +2,14 @@ package com.xshxy.seeklightbackend.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 @Component
 @ConfigurationProperties(prefix = "ai.models")
-@Data
 public class AiModelsProperties {
 
     private Map<String, ModelConfig> configs = new HashMap<>();
@@ -21,6 +20,6 @@ public class AiModelsProperties {
         private String baseUrl;
         private String modelName;
         private Double temperature;
-
+        private Integer dimensions;
     }
 }

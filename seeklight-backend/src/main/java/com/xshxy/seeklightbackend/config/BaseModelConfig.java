@@ -1,14 +1,14 @@
 package com.xshxy.seeklightbackend.config;
 
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import jakarta.annotation.Resource;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 用于配置基础的模型组件配置类
+ * Base AI model beans.
  */
 @Configuration
 public class BaseModelConfig {
@@ -19,10 +19,6 @@ public class BaseModelConfig {
         this.aiModelsProperties = aiModelsProperties;
     }
 
-    /**
-     * DeepSeek-chat模型 对话基础模型bean
-     * @return
-     */
     @Bean("deepseekChatModel")
     public ChatModel deepseekChatModel() {
         AiModelsProperties.ModelConfig deepseek = aiModelsProperties.getConfigs().get("deepseek");
@@ -31,6 +27,17 @@ public class BaseModelConfig {
                 .baseUrl(deepseek.getBaseUrl())
                 .modelName(deepseek.getModelName())
                 .temperature(deepseek.getTemperature())
+                .build();
+    }
+
+    @Bean("textEmbeddingV4Model")
+    public EmbeddingModel textEmbeddingV4Model() {
+        AiModelsProperties.ModelConfig embedding = aiModelsProperties.getConfigs().get("text-embedding-v4");
+        return OpenAiEmbeddingModel.builder()
+                .apiKey(embedding.getApiKey())
+                .baseUrl(embedding.getBaseUrl())
+                .modelName(embedding.getModelName())
+                .dimensions(embedding.getDimensions())
                 .build();
     }
 }
