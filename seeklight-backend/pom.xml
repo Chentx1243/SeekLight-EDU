@@ -50,6 +50,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-milvus</artifactId>
+            <version>1.12.2-beta22</version>
+        </dependency>
 <!--        mybatis依赖-->
         <dependency>
             <groupId>com.baomidou</groupId>

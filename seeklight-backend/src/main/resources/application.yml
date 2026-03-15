@@ -32,6 +32,22 @@ ai:
         model-name: deepseek-chat
         temperature: 0.7
 
+# 向量存储配置
+langchain4j:
+  milvus:
+    host: ${MILVUS_HOST:dbconn.sealosbja.site}
+    port: ${MILVUS_PORT:44274}
+    collection-name: ${MILVUS_COLLECTION:seeklight_knowledge_base}
+    # This must be aligned with the actual embedding model dimension.
+    dimension: ${MILVUS_DIMENSION:1024}
+    index-type: ${MILVUS_INDEX_TYPE:FLAT}
+    metric-type: ${MILVUS_METRIC_TYPE:COSINE}
+    consistency-level: ${MILVUS_CONSISTENCY_LEVEL:EVENTUALLY}
+    auto-flush-on-insert: ${MILVUS_AUTO_FLUSH_ON_INSERT:true}
+    id-field-name: ${MILVUS_ID_FIELD_NAME:id}
+    text-field-name: ${MILVUS_TEXT_FIELD_NAME:text}
+    metadata-field-name: ${MILVUS_METADATA_FIELD_NAME:metadata}
+    vector-field-name: ${MILVUS_VECTOR_FIELD_NAME:vector}
 # 百度搜索配置
 baidu:
   search:
