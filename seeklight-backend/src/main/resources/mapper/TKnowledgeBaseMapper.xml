@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xshxy.seeklightbackend.mapper.TKnowledgeBaseMapper">
+
+    <resultMap id="BaseResultMap" type="com.xshxy.seeklightbackend.domain.TKnowledgeBase">
+            <id property="kbId" column="kb_id" />
+            <result property="kbName" column="kb_name" />
+            <result property="description" column="description" />
+            <result property="ownerUserId" column="owner_user_id" />
+            <result property="ownerGroupId" column="owner_group_id" />
+            <result property="isGroupShared" column="is_group_shared" />
+            <result property="isDeleted" column="is_deleted" />
+            <result property="createdAt" column="created_at" />
+            <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        kb_id,kb_name,description,owner_user_id,owner_group_id,is_group_shared,
+        is_deleted,created_at,updated_at
+    </sql>
+</mapper>
