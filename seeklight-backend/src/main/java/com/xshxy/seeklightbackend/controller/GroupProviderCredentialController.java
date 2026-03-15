@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TGroupProviderCredential;
+import com.xshxy.seeklightbackend.domain.dto.GroupProviderCredentialListItemDto;
 import com.xshxy.seeklightbackend.domain.request.CreateGroupProviderCredentialRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateGroupProviderCredentialRequest;
 import com.xshxy.seeklightbackend.service.TGroupProviderCredentialService;
@@ -32,7 +33,7 @@ public class GroupProviderCredentialController {
 
     @GetMapping
     @Operation(summary = "查询凭据列表", description = "分页查询分组供应商凭据配置")
-    public Result<Page<TGroupProviderCredential>> listCredentials(
+    public Result<Page<GroupProviderCredentialListItemDto>> listCredentials(
             @Parameter(description = "当前页码")
             @RequestParam(value = "current", defaultValue = "1") Integer current,
             @Parameter(description = "每页大小")

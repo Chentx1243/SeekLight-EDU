@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TGroupProviderCredential;
 import com.xshxy.seeklightbackend.domain.TModelProvider;
+import com.xshxy.seeklightbackend.domain.dto.GroupProviderCredentialListItemDto;
 import com.xshxy.seeklightbackend.domain.request.CreateGroupProviderCredentialRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateGroupProviderCredentialRequest;
 import com.xshxy.seeklightbackend.exception.BusinessException;
@@ -35,17 +36,9 @@ public class TGroupProviderCredentialServiceImpl extends ServiceImpl<TGroupProvi
     private TModelProviderService providerService;
 
     @Override
-    public Page<TGroupProviderCredential> pageCredentials(Integer current, Integer size, Integer groupId, Integer providerId) {
-        Page<TGroupProviderCredential> page = new Page<>(current, size);
-        LambdaQueryWrapper<TGroupProviderCredential> wrapper = new LambdaQueryWrapper<>();
-        if (groupId != null) {
-            wrapper.eq(TGroupProviderCredential::getGroupId, groupId);
-        }
-        if (providerId != null) {
-            wrapper.eq(TGroupProviderCredential::getProviderId, providerId);
-        }
-        wrapper.orderByDesc(TGroupProviderCredential::getCreatedAt);
-        return page(page, wrapper);
+    public Page<GroupProviderCredentialListItemDto> pageCredentials(Integer current, Integer size, Integer groupId, Integer providerId) {
+        Page<GroupProviderCredentialListItemDto> page = new Page<>(current, size);
+        return baseMapper.selectCredentialPage(page, groupId, providerId);
     }
 
     @Override

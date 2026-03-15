@@ -1,7 +1,10 @@
 package com.xshxy.seeklightbackend.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xshxy.seeklightbackend.domain.TGroupProviderCredential;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xshxy.seeklightbackend.domain.dto.GroupProviderCredentialListItemDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 陈凯宁
@@ -11,6 +14,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface TGroupProviderCredentialMapper extends BaseMapper<TGroupProviderCredential> {
 
+    Page<GroupProviderCredentialListItemDto> selectCredentialPage(Page<GroupProviderCredentialListItemDto> page,
+                                                                  @Param("groupId") Integer groupId,
+                                                                  @Param("providerId") Integer providerId);
 }
 
 

@@ -2,6 +2,7 @@ package com.xshxy.seeklightbackend.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xshxy.seeklightbackend.domain.TGroupProviderCredential;
+import com.xshxy.seeklightbackend.domain.dto.GroupProviderCredentialListItemDto;
 import com.xshxy.seeklightbackend.domain.request.CreateGroupProviderCredentialRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateGroupProviderCredentialRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -13,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TGroupProviderCredentialService extends IService<TGroupProviderCredential> {
 
-    Page<TGroupProviderCredential> pageCredentials(Integer current, Integer size, Integer groupId, Integer providerId);
+    Page<GroupProviderCredentialListItemDto> pageCredentials(Integer current, Integer size, Integer groupId, Integer providerId);
 
     TGroupProviderCredential getCredential(Integer id);
 
