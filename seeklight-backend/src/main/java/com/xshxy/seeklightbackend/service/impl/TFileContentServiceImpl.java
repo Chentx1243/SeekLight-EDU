@@ -8,6 +8,7 @@ import com.xshxy.seeklightbackend.mapper.TFileContentMapper;
 import com.xshxy.seeklightbackend.service.TFileContentService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import com.xshxy.seeklightbackend.util.DocumentParseUtil;
+import java.io.InputStream;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,26 +44,38 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
     @Override
     public String parseFileContent(MultipartFile file) {
         String fileName = getValidatedFileName(file);
-        String lowerFileName = fileName.toLowerCase();
+        try {
+            return parseFileContent(file.getInputStream(), fileName);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException("Failed to parse file: " + fileName + ", cause: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public String parseFileContent(InputStream inputStream, String fileType) {
+        validateInputStream(inputStream);
+        String normalizedFileType = normalizeFileType(fileType);
 
         try {
-            if (lowerFileName.endsWith(".pdf")) {
-                return DocumentParseUtil.parsePdf(file);
+            if (normalizedFileType.endsWith(".pdf")) {
+                return DocumentParseUtil.parsePdf(inputStream);
             }
-            if (lowerFileName.endsWith(".docx")) {
-                return DocumentParseUtil.parseWord(file);
+            if (normalizedFileType.endsWith(".docx")) {
+                return DocumentParseUtil.parseWord(inputStream);
             }
-            if (lowerFileName.endsWith(".xlsx")) {
-                return DocumentParseUtil.parseExcel(file);
+            if (normalizedFileType.endsWith(".xlsx")) {
+                return DocumentParseUtil.parseExcel(inputStream);
             }
-            if (lowerFileName.endsWith(".txt")) {
-                return DocumentParseUtil.parseTxt(file);
+            if (normalizedFileType.endsWith(".txt")) {
+                return DocumentParseUtil.parseTxt(inputStream);
             }
             throw new BusinessException("Unsupported file type");
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            throw new BusinessException("Failed to parse file: " + fileName + ", cause: " + e.getMessage());
+            throw new BusinessException("Failed to parse file: " + fileType + ", cause: " + e.getMessage());
         }
     }
 
@@ -96,5 +109,18 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
         }
 
         return fileName;
+    }
+
+    private void validateInputStream(InputStream inputStream) {
+        if (inputStream == null) {
+            throw new BusinessException("InputStream cannot be null");
+        }
+    }
+
+    private String normalizeFileType(String fileType) {
+        if (fileType == null || fileType.isBlank()) {
+            throw new BusinessException("File type cannot be blank");
+        }
+        return fileType.trim().toLowerCase();
     }
 }

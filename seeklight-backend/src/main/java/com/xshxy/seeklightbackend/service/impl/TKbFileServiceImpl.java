@@ -6,13 +6,19 @@ import com.xshxy.seeklightbackend.domain.TKbFile;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.mapper.TKbFileMapper;
-import com.xshxy.seeklightbackend.service.KnowledgeBaseFileStorageService;
-import com.xshxy.seeklightbackend.service.TKbFileService;
-import com.xshxy.seeklightbackend.service.UserInfoService;
+import com.xshxy.seeklightbackend.service.*;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import dev.langchain4j.store.embedding.IngestionResult;
 import jakarta.annotation.Resource;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +38,9 @@ public class TKbFileServiceImpl extends ServiceImpl<TKbFileMapper, TKbFile>
     @Resource
     private KnowledgeBaseFileStorageService knowledgeBaseFileStorageService;
 
+    @Resource
+    private FileRagAsyncService fileRagAsyncService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TKbFile uploadKbFile(Integer kbId, MultipartFile file) {
@@ -42,6 +51,7 @@ public class TKbFileServiceImpl extends ServiceImpl<TKbFileMapper, TKbFile>
         if (currentUser == null || currentUser.getUserId() == null) {
             throw new BusinessException("用户未登录");
         }
+        // 文件上传到对象存储
         String objectKey = knowledgeBaseFileStorageService.upload(kbId, file);
         TKbFile kbFile = new TKbFile();
         kbFile.setKbId(kbId);
@@ -49,13 +59,20 @@ public class TKbFileServiceImpl extends ServiceImpl<TKbFileMapper, TKbFile>
         kbFile.setFilePath(objectKey);
         kbFile.setFileSize(file.getSize());
         kbFile.setUploaderUserId(currentUser.getUserId());
-        kbFile.setStatus(1);
+        // 状态设为0：解析中
+        kbFile.setStatus(0);
         kbFile.setIsDeleted(0);
         kbFile.setCreatedAt(new Date());
         kbFile.setUpdatedAt(new Date());
         save(kbFile);
+
+        // 向量化存储
+        fileRagAsyncService.ragStore(kbFile, objectKey);
+
         return kbFile;
     }
+
+
 
     @Override
     public List<TKbFile> listKbFiles(Integer kbId) {
