@@ -4,22 +4,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xshxy.seeklightbackend.domain.TFileContent;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.exception.BusinessException;
-import com.xshxy.seeklightbackend.service.TFileContentService;
 import com.xshxy.seeklightbackend.mapper.TFileContentMapper;
+import com.xshxy.seeklightbackend.service.TFileContentService;
 import com.xshxy.seeklightbackend.service.UserInfoService;
 import com.xshxy.seeklightbackend.util.DocumentParseUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
-* @author 陈凯宁
-* @description 针对表【t_file_content(文件内容解析表)】的数据库操作Service实现
-* @createDate 2026-03-07 17:42:58
-*/
 @Service
 public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFileContent>
-    implements TFileContentService{
+        implements TFileContentService {
 
     @Resource
     private UserInfoService userInfoService;
@@ -29,65 +24,77 @@ public class TFileContentServiceImpl extends ServiceImpl<TFileContentMapper, TFi
 
     @Override
     public Integer parseFile(MultipartFile file) {
-        if (file == null || file.isEmpty()){
-            throw new BusinessException("文件不能为空");
-        }
-        // 获取用户信息
         TUser user = userInfoService.getUser();
-        // 获取文件完整名称
-        String fileName = file.getOriginalFilename();
-        if (fileName == null || fileName.isBlank()){
-            throw new BusinessException("文件名不能为空");
+        if (user == null || user.getUserId() == null) {
+            throw new BusinessException("User is not logged in");
         }
-        // 获取文件后缀
+
+        String fileName = getValidatedFileName(file);
+        String fileContent = parseFileContent(file);
+
+        TFileContent parsedFile = new TFileContent();
+        parsedFile.setFileName(fileName);
+        parsedFile.setContent(fileContent);
+        parsedFile.setOwnerId(user.getUserId());
+        save(parsedFile);
+        return parsedFile.getId();
+    }
+
+    @Override
+    public String parseFileContent(MultipartFile file) {
+        String fileName = getValidatedFileName(file);
         String lowerFileName = fileName.toLowerCase();
-        // 文件内容
-        String fileContent = "";
-        try{
+
+        try {
             if (lowerFileName.endsWith(".pdf")) {
-                // 解析文件内容
-                fileContent = DocumentParseUtil.parsePdf(file);
-            }else if (lowerFileName.endsWith(".docx")) {
-                fileContent = DocumentParseUtil.parseWord(file);
-            }else if (lowerFileName.endsWith(".xlsx")) {
-                fileContent = DocumentParseUtil.parseExcel(file);
-            }else if (lowerFileName.endsWith(".txt")) {
-                fileContent = DocumentParseUtil.parseTxt(file);
-            }else {
-                throw new BusinessException("不支持的文件类型");
+                return DocumentParseUtil.parsePdf(file);
             }
-            TFileContent parsedFile = new TFileContent();
-            parsedFile.setFileName(fileName);
-            parsedFile.setContent(fileContent);
-            parsedFile.setOwnerId(user.getUserId());
-            this.save(parsedFile);
-            return parsedFile.getId();
-        }catch (BusinessException e){
+            if (lowerFileName.endsWith(".docx")) {
+                return DocumentParseUtil.parseWord(file);
+            }
+            if (lowerFileName.endsWith(".xlsx")) {
+                return DocumentParseUtil.parseExcel(file);
+            }
+            if (lowerFileName.endsWith(".txt")) {
+                return DocumentParseUtil.parseTxt(file);
+            }
+            throw new BusinessException("Unsupported file type");
+        } catch (BusinessException e) {
             throw e;
-        }catch (Exception e){
-            throw new BusinessException("文件处理失败：" + fileName + e);
+        } catch (Exception e) {
+            throw new BusinessException("Failed to parse file: " + fileName + ", cause: " + e.getMessage());
         }
     }
 
     @Override
     public String getFileNameById(Integer fileId) {
         if (fileId == null) {
-            throw new BusinessException("文件ID不能为空");
+            throw new BusinessException("File ID cannot be null");
         }
+
         TUser user = userInfoService.getUser();
         if (user == null || user.getUserId() == null) {
-            throw new BusinessException("用户未登录");
+            throw new BusinessException("User is not logged in");
         }
+
         String fileName = fileContentMapper.selectFileNameByIdAndOwner(fileId, user.getUserId());
         if (fileName == null || fileName.isBlank()) {
-            throw new BusinessException("文件不存在或当前用户没有文件权限");
+            throw new BusinessException("File does not exist or access is denied");
+        }
+
+        return fileName;
+    }
+
+    private String getValidatedFileName(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("File cannot be empty");
+        }
+
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || fileName.isBlank()) {
+            throw new BusinessException("File name cannot be blank");
         }
 
         return fileName;
     }
 }
-
-
-
-
-
