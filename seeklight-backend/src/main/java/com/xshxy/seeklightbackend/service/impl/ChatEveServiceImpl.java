@@ -269,7 +269,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         AssistantService assistantService = buildKnowledgeBaseAssistant(streamingChatModel, contentRetriever);
         // 选定特定知识库
         Map<String, Object> queryMeta = new HashMap<>();
-        queryMeta.put("kb_id", chatBody.getKbId());
+        queryMeta.put("kb_id", chatBody.getKbIds());
         queryMeta.put("uploader_user_id", user.getUserId());
         if (chatBody.getFileIds() != null && !chatBody.getFileIds().isEmpty()){
             queryMeta.put("file_ids", chatBody.getFileIds());
@@ -325,12 +325,12 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .maxResults(6)
                 .minScore(0.55)
                 .dynamicFilter(query -> {
-                    Integer kbId = query.metadata().invocationParameters().get("kb_id");
+                    List<Integer> kbIds = query.metadata().invocationParameters().get("kb_id");
                     Integer userId = query.metadata().invocationParameters().get("uploader_user_id");
                     List<Integer> fileIds = query.metadata().invocationParameters().get("file_ids");
 
-                    Filter filter = metadataKey("kb_id").isEqualTo(kbId)
-                            .and(metadataKey("uploader_user_id").isEqualTo(userId));
+                    Filter filter = metadataKey("kb_id").isIn(kbIds);
+//                            .and(metadataKey("uploader_user_id").isEqualTo(userId));
 
                     if (fileIds != null) {
                         filter = filter.and(metadataKey("file_id").isIn(fileIds));

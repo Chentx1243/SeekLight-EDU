@@ -12,7 +12,7 @@ public class ChatKbRequest {
     private String user;
     private Long dialogueId;
     private String model;
-    private Integer kbId;
+    private List<Integer> kbIds;
     private List<Integer> fileIds; // 可选，只搜某文件
     private List<Message> messages;
 
