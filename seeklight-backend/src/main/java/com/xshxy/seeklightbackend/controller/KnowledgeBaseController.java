@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,6 +71,14 @@ public class KnowledgeBaseController {
     @Operation(summary = "知识库详情", description = "根据知识库 ID 查询详情")
     public Result<TKnowledgeBase> getKnowledgeBase(@PathVariable Integer kbId) {
         return Result.success(knowledgeBaseService.getKnowledgeBaseDetail(kbId));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/{kbId}/files")
+    @Operation(summary = "查询知识库文件列表", description = "根据知识库 ID 查询当前用户可访问的知识库文件列表，不分页")
+    public Result<List<TKbFile>> listKnowledgeBaseFiles(@PathVariable Integer kbId) {
+        knowledgeBaseService.getKnowledgeBaseDetail(kbId);
+        return Result.success(kbFileService.listKbFiles(kbId));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
