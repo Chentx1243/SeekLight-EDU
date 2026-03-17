@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.*;
+import com.xshxy.seeklightbackend.domain.request.ChatKbRequest;
 import com.xshxy.seeklightbackend.domain.resp.BaiduSearchResponse;
 import com.xshxy.seeklightbackend.domain.resp.netIntentionResult;
 import com.xshxy.seeklightbackend.exception.BusinessException;
@@ -12,12 +13,20 @@ import com.xshxy.seeklightbackend.mapper.TGroupProviderCredentialMapper;
 import com.xshxy.seeklightbackend.mapper.TModelProviderMapper;
 import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
 import com.xshxy.seeklightbackend.service.*;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.rag.DefaultRetrievalAugmentor;
+import dev.langchain4j.rag.RetrievalAugmentor;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.TokenStream;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.filter.Filter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +34,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.List;
+
+import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metadataKey;
 
 @Slf4j
 @Service
@@ -206,5 +217,83 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .onError((Throwable error) -> error.printStackTrace())
                 .start();
         return emitter;
+    }
+
+    @Override
+    public SseEmitter chatWithKnowledgeBase(SseEmitter emitter, ChatKbRequest chatBody){
+        return new SseEmitter();
+    }
+
+    /**
+     * 工厂方法：构造内容转化器，用于将用户query向量化作RAG搜索
+     * @param embeddingStore 向量库
+     * @param embeddingModel 向量模型
+     * @return ContentRetriever
+     */
+    private ContentRetriever buildKbContentRetriever(
+            EmbeddingStore<TextSegment> embeddingStore,
+            EmbeddingModel embeddingModel
+    ) {
+        return EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(embeddingStore)
+                .embeddingModel(embeddingModel)
+                .maxResults(5)
+                .minScore(0.75)
+                .dynamicFilter(query -> {
+                    Integer kbId = query.metadata().invocationParameters().get("kb_id");
+                    Integer userId = query.metadata().invocationParameters().get("uploader_user_id");
+                    Integer fileId = query.metadata().invocationParameters().get("file_id");
+
+                    Filter filter = metadataKey("kb_id").isEqualTo(kbId)
+                            .and(metadataKey("uploader_user_id").isEqualTo(userId));
+
+                    if (fileId != null) {
+                        filter = filter.and(metadataKey("file_id").isEqualTo(fileId));
+                    }
+
+                    return filter;
+                })
+                .build();
+    }
+
+    /**
+     * 工厂方法：检索增强器，用于处理RAG的检索到的chunk（重排序与重写query等）
+     * @param contentRetriever
+     * @return
+     */
+    private RetrievalAugmentor buildRetrievalAugmentor(ContentRetriever contentRetriever) {
+        return DefaultRetrievalAugmentor.builder()
+                .contentRetriever(contentRetriever)
+                .build();
+    }
+
+    /**
+     * 构建知识库问答助手实例
+     * @param model
+     * @param contentRetriever
+     * @return
+     */
+    private AssistantService buildKnowledgeBaseAssistant(
+            OpenAiStreamingChatModel model,
+            ContentRetriever contentRetriever
+    ) {
+        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .chatMemoryStore(store)
+                .maxMessages(5)
+                .build();
+
+        RetrievalAugmentor retrievalAugmentor = buildRetrievalAugmentor(contentRetriever);
+
+        return AiServices.builder(AssistantService.class)
+                // 装载模型
+                .streamingChatModel(model)
+                // 模型记忆组件
+                .chatMemoryProvider(chatMemoryProvider)
+                // RAG核心
+                .retrievalAugmentor(retrievalAugmentor)
+                // RAG片段不记忆
+                .storeRetrievedContentInChatMemory(false)
+                .build();
     }
 }
