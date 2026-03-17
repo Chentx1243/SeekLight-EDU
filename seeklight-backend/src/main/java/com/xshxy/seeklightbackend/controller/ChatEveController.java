@@ -1,5 +1,6 @@
 package com.xshxy.seeklightbackend.controller;
 
+import com.xshxy.seeklightbackend.domain.request.ChatKbRequest;
 import com.xshxy.seeklightbackend.domain.resp.netIntentionResult;
 import com.xshxy.seeklightbackend.manager.SseEmitterManager;
 import com.xshxy.seeklightbackend.domain.request.ChatEveRequest;
@@ -38,6 +39,20 @@ public class ChatEveController {
             @RequestBody ChatEveRequest chatBody){
         SseEmitter emitter = emitterManager.getEmitter(chatBody.getUser());
         return chatEveService.chat(emitter,chatBody);
+    }
+
+    /**
+     * 知识库对话
+     * @param chatBody 对话请求体
+     * @return
+     */
+
+    @PostMapping("/kb_runs")
+    @Operation(summary = "知识库：流式对话", description = "基于请求体与可选API Key进行SSE对话")
+    public SseEmitter chatKnowledge(
+            @RequestBody ChatKbRequest chatBody){
+        SseEmitter emitter = emitterManager.getEmitter(chatBody.getUser());
+        return chatEveService.chatWithKnowledgeBase(emitter,chatBody);
     }
 
     /**

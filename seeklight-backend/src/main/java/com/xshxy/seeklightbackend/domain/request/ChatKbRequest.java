@@ -8,7 +8,8 @@ import java.util.List;
 @Schema(name = "ChatKbRequest", description = "知识库对话请求")
 @Data
 public class ChatKbRequest {
-
+    @Schema(description = "平台用户唯一标识", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String user;
     private Long dialogueId;
     private String model;
     private Integer kbId;
