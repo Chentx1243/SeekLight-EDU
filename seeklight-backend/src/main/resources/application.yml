@@ -33,7 +33,7 @@ ai:
         temperature: 0.7
       text-embedding-v4:
         api-key: sk-vh9P9c1gOU4qkuNy2185157e64Df40F1A8Ab3f6316175b83
-        base-url: https://api.gpt.ge/v1/embeddings
+        base-url: https://api.gpt.ge/v1
         model-name: text-embedding-v4
         dimensions: 1024
 
