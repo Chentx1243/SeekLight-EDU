@@ -19,5 +19,7 @@ public interface TKbFileService extends IService<TKbFile> {
 
     void deleteKbFile(Integer fileId);
 
+    void batchDeleteKbFiles(List<Integer> fileIds);
+
     InputStream getKbFileStream(Integer fileId);
 }

@@ -5,6 +5,7 @@ import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TKbFile;
 import com.xshxy.seeklightbackend.domain.TKnowledgeBase;
 import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.domain.request.BatchDeleteKbFilesRequest;
 import com.xshxy.seeklightbackend.domain.request.CreateKnowledgeBaseRequest;
 import com.xshxy.seeklightbackend.exception.BusinessException;
 import com.xshxy.seeklightbackend.service.TKbFileService;
@@ -102,6 +103,14 @@ public class KnowledgeBaseController {
         }
 
         return Result.success(kbFileService.uploadKbFile(kbId, file));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @DeleteMapping("/files")
+    @Operation(summary = "批量删除知识库文件", description = "根据文件 ID 列表批量删除知识库文件")
+    public Result<String> batchDeleteKnowledgeBaseFiles(@RequestBody BatchDeleteKbFilesRequest request) {
+        kbFileService.batchDeleteKbFiles(request == null ? null : request.getFileIds());
+        return Result.success("删除成功");
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
