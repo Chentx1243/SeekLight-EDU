@@ -115,13 +115,13 @@ public class TKbFileServiceImpl extends ServiceImpl<TKbFileMapper, TKbFile>
     private void deleteSingleKbFile(Integer fileId) {
         TKbFile kbFile = getAvailableKbFile(fileId);
         validateDeletePermission(kbFile.getKbId());
+        // 删除向量库
         deleteFileEmbeddings(fileId);
+        // 删除对象存储
         if (StringUtils.hasText(kbFile.getFilePath())) {
             knowledgeBaseFileStorageService.delete(kbFile.getFilePath());
         }
-        kbFile.setIsDeleted(1);
-        kbFile.setUpdatedAt(new Date());
-        updateById(kbFile);
+        removeById(fileId);
     }
 
     private void validateDeletePermission(Integer kbId) {

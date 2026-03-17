@@ -261,7 +261,7 @@ public class ChatEveServiceImpl implements ChatEveService {
                 .baseUrl(provider.getBaseUrl())
                 .apiKey(apiKey)
                 .modelName(model.getModelKey())
-                .temperature(0.3)
+                .temperature(0.5)
                 .build();
         // query处理器：RAG核心组件
         ContentRetriever contentRetriever = buildKbContentRetriever(embeddingStore, embeddingModel);
@@ -322,8 +322,8 @@ public class ChatEveServiceImpl implements ChatEveService {
         return EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embeddingStore)
                 .embeddingModel(embeddingModel)
-                .maxResults(5)
-                .minScore(0.75)
+                .maxResults(6)
+                .minScore(0.55)
                 .dynamicFilter(query -> {
                     Integer kbId = query.metadata().invocationParameters().get("kb_id");
                     Integer userId = query.metadata().invocationParameters().get("uploader_user_id");
