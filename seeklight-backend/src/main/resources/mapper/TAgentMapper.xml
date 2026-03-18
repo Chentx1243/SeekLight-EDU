@@ -25,4 +25,76 @@
         app_id,app_key,visibility,status,is_deleted,
         created_at,updated_at
     </sql>
+
+    <resultMap id="AgentListItemResultMap" type="com.xshxy.seeklightbackend.domain.dto.AgentListItemDto">
+        <id property="agentId" column="agent_id" />
+        <result property="agentName" column="agent_name" />
+        <result property="description" column="description" />
+        <result property="agentType" column="agent_type" />
+        <result property="ownerUserId" column="owner_user_id" />
+        <result property="ownerUserName" column="owner_user_name" />
+        <result property="ownerGroupId" column="owner_group_id" />
+        <result property="ownerGroupName" column="owner_group_name" />
+        <result property="appId" column="app_id" />
+        <result property="visibility" column="visibility" />
+        <result property="status" column="status" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <resultMap id="AgentVisibleGroupResultMap" type="com.xshxy.seeklightbackend.domain.dto.AgentVisibleGroupDto">
+        <id property="groupId" column="group_id" />
+        <result property="groupName" column="group_name" />
+        <result property="description" column="description" />
+        <result property="grantedBy" column="granted_by" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <select id="selectAgentPage" resultMap="AgentListItemResultMap">
+        SELECT
+            a.agent_id,
+            a.agent_name,
+            a.description,
+            a.agent_type,
+            a.owner_user_id,
+            u.name AS owner_user_name,
+            a.owner_group_id,
+            g.group_name AS owner_group_name,
+            a.app_id,
+            a.visibility,
+            a.status,
+            a.created_at,
+            a.updated_at
+        FROM t_agent a
+        LEFT JOIN t_user u ON a.owner_user_id = u.user_id AND u.is_deleted = 0
+        LEFT JOIN t_group g ON a.owner_group_id = g.group_id AND g.is_deleted = 0
+        WHERE a.is_deleted = 0
+        <if test="agentName != null and agentName != ''">
+            AND a.agent_name LIKE CONCAT('%', #{agentName}, '%')
+        </if>
+        <if test="ownerUserName != null and ownerUserName != ''">
+            AND u.name LIKE CONCAT('%', #{ownerUserName}, '%')
+        </if>
+        <if test="ownerGroupName != null and ownerGroupName != ''">
+            AND g.group_name LIKE CONCAT('%', #{ownerGroupName}, '%')
+        </if>
+        <if test="status != null">
+            AND a.status = #{status}
+        </if>
+        ORDER BY a.created_at DESC
+    </select>
+
+    <select id="selectVisibleGroups" resultMap="AgentVisibleGroupResultMap">
+        SELECT
+            p.group_id,
+            g.group_name,
+            g.description,
+            p.granted_by,
+            p.created_at
+        FROM t_agent_group_permission p
+        LEFT JOIN t_group g ON p.group_id = g.group_id AND g.is_deleted = 0
+        WHERE p.agent_id = #{agentId}
+          AND p.is_deleted = 0
+        ORDER BY p.created_at DESC
+    </select>
 </mapper>

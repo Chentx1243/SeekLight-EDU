@@ -1,11 +1,14 @@
 package com.xshxy.seeklightbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xshxy.seeklightbackend.domain.TAgent;
 import com.xshxy.seeklightbackend.domain.TAgentGroupPermission;
 import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TUser;
+import com.xshxy.seeklightbackend.domain.dto.AgentListItemDto;
+import com.xshxy.seeklightbackend.domain.dto.AgentVisibleGroupDto;
 import com.xshxy.seeklightbackend.domain.request.CreateAgentRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateAgentRequest;
 import com.xshxy.seeklightbackend.exception.BusinessException;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> implements TAgentService {
@@ -131,6 +135,43 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
         // After updates, keep group permissions aligned with the latest visibility and owner group.
         syncPermissionsAfterUpdate(agent, ownerUserId);
         return agent;
+    }
+
+    @Override
+    public Page<AgentListItemDto> pageAgents(Integer current, Integer size, String agentName, String ownerUserName,
+                                             String ownerGroupName, Integer status) {
+        if (current == null || current < 1) {
+            throw new BusinessException("页码必须大于0");
+        }
+        if (size == null || size < 1) {
+            throw new BusinessException("每页条数必须大于0");
+        }
+        if (status != null) {
+            validateStatus(status);
+        }
+        Page<AgentListItemDto> page = new Page<>(current, size);
+        return baseMapper.selectAgentPage(
+                page,
+                normalizeNullableText(agentName),
+                normalizeNullableText(ownerUserName),
+                normalizeNullableText(ownerGroupName),
+                status
+        );
+    }
+
+    @Override
+    public List<AgentVisibleGroupDto> listVisibleGroups(Long agentId) {
+        if (agentId == null) {
+            throw new BusinessException("Agent ID不能为空");
+        }
+        TAgent agent = getById(agentId);
+        if (agent == null) {
+            throw new BusinessException("Agent不存在");
+        }
+        if (!Integer.valueOf(1).equals(agent.getVisibility())) {
+            throw new BusinessException("当前Agent不是共享智能体");
+        }
+        return baseMapper.selectVisibleGroups(agentId);
     }
 
     private void validateRequiredFields(String agentName,
