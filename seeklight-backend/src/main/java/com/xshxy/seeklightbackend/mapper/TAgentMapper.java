@@ -5,6 +5,7 @@ import com.xshxy.seeklightbackend.domain.TAgent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xshxy.seeklightbackend.domain.dto.AgentListItemDto;
 import com.xshxy.seeklightbackend.domain.dto.AgentVisibleGroupDto;
+import com.xshxy.seeklightbackend.domain.dto.AvailableAgentDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,6 +25,9 @@ public interface TAgentMapper extends BaseMapper<TAgent> {
                                            @Param("status") Integer status);
 
     List<AgentVisibleGroupDto> selectVisibleGroups(@Param("agentId") Long agentId);
+
+    List<AvailableAgentDto> selectAvailableAgentsForUser(@Param("userId") Integer userId,
+                                                         @Param("groupId") Integer groupId);
 }
 
 

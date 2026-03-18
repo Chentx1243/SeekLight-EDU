@@ -9,6 +9,7 @@ import com.xshxy.seeklightbackend.domain.TGroup;
 import com.xshxy.seeklightbackend.domain.TUser;
 import com.xshxy.seeklightbackend.domain.dto.AgentListItemDto;
 import com.xshxy.seeklightbackend.domain.dto.AgentVisibleGroupDto;
+import com.xshxy.seeklightbackend.domain.dto.AvailableAgentDto;
 import com.xshxy.seeklightbackend.domain.request.CreateAgentRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateAgentRequest;
 import com.xshxy.seeklightbackend.exception.BusinessException;
@@ -17,6 +18,7 @@ import com.xshxy.seeklightbackend.mapper.TAgentMapper;
 import com.xshxy.seeklightbackend.service.TAgentService;
 import com.xshxy.seeklightbackend.service.TGroupService;
 import com.xshxy.seeklightbackend.service.TUserService;
+import com.xshxy.seeklightbackend.service.UserInfoService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,9 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
 
     @Resource
     private TAgentGroupPermissionMapper agentGroupPermissionMapper;
+
+    @Resource
+    private UserInfoService userInfoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -172,6 +177,15 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
             throw new BusinessException("当前Agent不是共享智能体");
         }
         return baseMapper.selectVisibleGroups(agentId);
+    }
+
+    @Override
+    public List<AvailableAgentDto> listAvailableAgentsForCurrentUser() {
+        TUser currentUser = userInfoService.getUser();
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        return baseMapper.selectAvailableAgentsForUser(currentUser.getUserId(), currentUser.getGroupId());
     }
 
     private void validateRequiredFields(String agentName,

@@ -50,6 +50,21 @@
         <result property="createdAt" column="created_at" />
     </resultMap>
 
+    <resultMap id="AvailableAgentResultMap" type="com.xshxy.seeklightbackend.domain.dto.AvailableAgentDto">
+        <id property="agentId" column="agent_id" />
+        <result property="agentName" column="agent_name" />
+        <result property="description" column="description" />
+        <result property="agentType" column="agent_type" />
+        <result property="ownerUserId" column="owner_user_id" />
+        <result property="ownerUserName" column="owner_user_name" />
+        <result property="ownerGroupId" column="owner_group_id" />
+        <result property="ownerGroupName" column="owner_group_name" />
+        <result property="visibility" column="visibility" />
+        <result property="status" column="status" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
     <select id="selectAgentPage" resultMap="AgentListItemResultMap">
         SELECT
             a.agent_id,
@@ -96,5 +111,54 @@
         WHERE p.agent_id = #{agentId}
           AND p.is_deleted = 0
         ORDER BY p.created_at DESC
+    </select>
+
+    <select id="selectAvailableAgentsForUser" resultMap="AvailableAgentResultMap">
+        SELECT *
+        FROM (
+            SELECT
+                a.agent_id,
+                a.agent_name,
+                a.description,
+                a.agent_type,
+                a.owner_user_id,
+                u.name AS owner_user_name,
+                a.owner_group_id,
+                g.group_name AS owner_group_name,
+                a.visibility,
+                a.status,
+                a.created_at,
+                a.updated_at
+            FROM t_agent a
+            LEFT JOIN t_user u ON a.owner_user_id = u.user_id AND u.is_deleted = 0
+            LEFT JOIN t_group g ON a.owner_group_id = g.group_id AND g.is_deleted = 0
+            WHERE a.is_deleted = 0
+              AND a.status = 1
+              AND a.owner_user_id = #{userId}
+
+            UNION
+
+            SELECT
+                a.agent_id,
+                a.agent_name,
+                a.description,
+                a.agent_type,
+                a.owner_user_id,
+                u.name AS owner_user_name,
+                a.owner_group_id,
+                g.group_name AS owner_group_name,
+                a.visibility,
+                a.status,
+                a.created_at,
+                a.updated_at
+            FROM t_agent a
+            INNER JOIN t_agent_group_permission p ON a.agent_id = p.agent_id AND p.is_deleted = 0
+            LEFT JOIN t_user u ON a.owner_user_id = u.user_id AND u.is_deleted = 0
+            LEFT JOIN t_group g ON a.owner_group_id = g.group_id AND g.is_deleted = 0
+            WHERE a.is_deleted = 0
+              AND a.status = 1
+              AND p.group_id = #{groupId}
+        ) available_agents
+        ORDER BY created_at DESC
     </select>
 </mapper>

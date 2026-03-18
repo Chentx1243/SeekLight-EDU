@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xshxy.seeklightbackend.domain.TAgent;
 import com.xshxy.seeklightbackend.domain.dto.AgentListItemDto;
 import com.xshxy.seeklightbackend.domain.dto.AgentVisibleGroupDto;
+import com.xshxy.seeklightbackend.domain.dto.AvailableAgentDto;
 import com.xshxy.seeklightbackend.domain.request.CreateAgentRequest;
 import com.xshxy.seeklightbackend.domain.request.UpdateAgentRequest;
 
@@ -20,4 +21,6 @@ public interface TAgentService extends IService<TAgent> {
                                       String ownerGroupName, Integer status);
 
     List<AgentVisibleGroupDto> listVisibleGroups(Long agentId);
+
+    List<AvailableAgentDto> listAvailableAgentsForCurrentUser();
 }
