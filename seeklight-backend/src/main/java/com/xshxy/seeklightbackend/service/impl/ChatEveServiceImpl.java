@@ -147,9 +147,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         if (dialogue.getTitle() == null || dialogue.getTitle().isBlank()) {
             // 最多截取10个用户输入的内容作为title
             dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
-            if (dialogue.getModelId() == null) {
-                dialogue.setModelId(modelEntity.getModelId());
-            }
+            dialogue.setModelId(modelEntity.getModelId());
             dialogueService.updateById(dialogue);
         }
 
