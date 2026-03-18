@@ -188,6 +188,25 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
         return baseMapper.selectAvailableAgentsForUser(currentUser.getUserId(), currentUser.getGroupId());
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteAgent(Long agentId) {
+        if (agentId == null) {
+            throw new BusinessException("Agent ID不能为空");
+        }
+        TAgent agent = getById(agentId);
+        if (agent == null) {
+            throw new BusinessException("Agent不存在");
+        }
+
+        // Delete sharing permissions first to keep permission data consistent with the agent lifecycle.
+        LambdaQueryWrapper<TAgentGroupPermission> permissionWrapper = new LambdaQueryWrapper<>();
+        permissionWrapper.eq(TAgentGroupPermission::getAgentId, agentId);
+        agentGroupPermissionMapper.delete(permissionWrapper);
+
+        return removeById(agentId);
+    }
+
     private void validateRequiredFields(String agentName,
                                         String agentType,
                                         Integer ownerUserId,

@@ -23,4 +23,6 @@ public interface TAgentService extends IService<TAgent> {
     List<AgentVisibleGroupDto> listVisibleGroups(Long agentId);
 
     List<AvailableAgentDto> listAvailableAgentsForCurrentUser();
+
+    boolean deleteAgent(Long agentId);
 }

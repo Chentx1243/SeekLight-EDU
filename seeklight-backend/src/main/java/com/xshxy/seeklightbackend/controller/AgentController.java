@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,5 +85,17 @@ public class AgentController {
             @Parameter(description = "Agent ID", required = true)
             @PathVariable Long agentId) {
         return Result.success(agentService.listVisibleGroups(agentId));
+    }
+
+    @DeleteMapping("/{agentId}")
+    @Operation(summary = "删除Agent", description = "根据 Agent ID 删除 Agent，并同步删除其组织共享权限")
+    public Result<String> deleteAgent(
+            @Parameter(description = "Agent ID", required = true)
+            @PathVariable Long agentId) {
+        boolean removed = agentService.deleteAgent(agentId);
+        if (!removed) {
+            return Result.failure("删除失败");
+        }
+        return Result.success("删除成功");
     }
 }
