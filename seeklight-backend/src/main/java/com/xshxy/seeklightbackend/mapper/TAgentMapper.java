@@ -28,6 +28,9 @@ public interface TAgentMapper extends BaseMapper<TAgent> {
 
     List<AvailableAgentDto> selectAvailableAgentsForUser(@Param("userId") Integer userId,
                                                          @Param("groupId") Integer groupId);
+
+    List<String> selectAvailableAgentTypesForUser(@Param("userId") Integer userId,
+                                                  @Param("groupId") Integer groupId);
 }
 
 

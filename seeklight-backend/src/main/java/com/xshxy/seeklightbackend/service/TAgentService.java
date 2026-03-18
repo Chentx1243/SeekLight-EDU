@@ -24,5 +24,7 @@ public interface TAgentService extends IService<TAgent> {
 
     List<AvailableAgentDto> listAvailableAgentsForCurrentUser();
 
+    List<String> listAvailableAgentTypesForCurrentUser();
+
     boolean deleteAgent(Long agentId);
 }

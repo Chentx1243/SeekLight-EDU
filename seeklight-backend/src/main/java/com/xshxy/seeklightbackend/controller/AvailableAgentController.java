@@ -27,4 +27,11 @@ public class AvailableAgentController {
     public Result<List<AvailableAgentDto>> listAvailableAgentsForCurrentUser() {
         return Result.success(agentService.listAvailableAgentsForCurrentUser());
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/available/types")
+    @Operation(summary = "查询当前登录用户可用的智能体类型列表", description = "返回当前登录用户可用智能体的 agentType 分类列表，自动去重，可用于 Agent 市场分类展示")
+    public Result<List<String>> listAvailableAgentTypesForCurrentUser() {
+        return Result.success(agentService.listAvailableAgentTypesForCurrentUser());
+    }
 }

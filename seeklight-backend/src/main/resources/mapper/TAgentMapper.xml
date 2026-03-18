@@ -161,4 +161,27 @@
         ) available_agents
         ORDER BY created_at DESC
     </select>
+
+    <select id="selectAvailableAgentTypesForUser" resultType="java.lang.String">
+        SELECT DISTINCT agent_type
+        FROM (
+            SELECT a.agent_type
+            FROM t_agent a
+            WHERE a.is_deleted = 0
+              AND a.status = 1
+              AND a.owner_user_id = #{userId}
+
+            UNION
+
+            SELECT a.agent_type
+            FROM t_agent a
+            INNER JOIN t_agent_group_permission p ON a.agent_id = p.agent_id AND p.is_deleted = 0
+            WHERE a.is_deleted = 0
+              AND a.status = 1
+              AND p.group_id = #{groupId}
+        ) available_agent_types
+        WHERE agent_type IS NOT NULL
+          AND agent_type != ''
+        ORDER BY agent_type ASC
+    </select>
 </mapper>

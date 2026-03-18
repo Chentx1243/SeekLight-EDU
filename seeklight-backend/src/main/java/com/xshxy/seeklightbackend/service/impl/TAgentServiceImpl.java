@@ -189,6 +189,15 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
     }
 
     @Override
+    public List<String> listAvailableAgentTypesForCurrentUser() {
+        TUser currentUser = userInfoService.getUser();
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        return baseMapper.selectAvailableAgentTypesForUser(currentUser.getUserId(), currentUser.getGroupId());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteAgent(Long agentId) {
         if (agentId == null) {
