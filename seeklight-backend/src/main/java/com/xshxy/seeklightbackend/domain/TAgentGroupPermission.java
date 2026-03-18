@@ -1,9 +1,7 @@
 package com.xshxy.seeklightbackend.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
 import lombok.Data;
 
@@ -38,6 +36,7 @@ public class TAgentGroupPermission {
     /**
      * 逻辑删除标记（0未删除 1已删除）
      */
+    @TableLogic
     private Integer isDeleted;
 
     /**
