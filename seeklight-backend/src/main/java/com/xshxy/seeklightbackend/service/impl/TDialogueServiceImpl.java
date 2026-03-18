@@ -86,7 +86,6 @@ public class TDialogueServiceImpl extends ServiceImpl<TDialogueMapper, TDialogue
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result<String> deleteHistoryItem(Long dialogueId) {
-        // TODO 数据一致性优化
         LambdaQueryWrapper<TDialogue> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TDialogue::getDialogueId, dialogueId);
         int deleteCount = dialogueMapper.delete(queryWrapper);
