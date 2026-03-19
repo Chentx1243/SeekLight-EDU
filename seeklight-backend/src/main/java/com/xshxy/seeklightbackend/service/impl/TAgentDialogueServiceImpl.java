@@ -3,6 +3,7 @@ package com.xshxy.seeklightbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mongodb.client.result.DeleteResult;
+import com.xshxy.seeklightbackend.config.AgentPersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.common.Result;
 import com.xshxy.seeklightbackend.domain.TAgent;
 import com.xshxy.seeklightbackend.domain.TAgentDialogue;
@@ -33,9 +34,6 @@ import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJ
 @Service
 public class TAgentDialogueServiceImpl extends ServiceImpl<TAgentDialogueMapper, TAgentDialogue>
         implements TAgentDialogueService {
-
-    private static final String COLLECTION = "chat_memory_doc";
-    private static final String HISTORY = "chat_memory_history";
 
     private final MongoTemplate mongoTemplate;
     private final TAgentMapper agentMapper;
@@ -107,8 +105,8 @@ public class TAgentDialogueServiceImpl extends ServiceImpl<TAgentDialogueMapper,
 
         String memoryId = AgentDialogueMemoryUtil.memoryId(agentDialogueId);
         Query query = new Query(Criteria.where("_id").is(memoryId));
-        DeleteResult removeHistory = mongoTemplate.remove(query, HISTORY);
-        DeleteResult removeMemory = mongoTemplate.remove(query, COLLECTION);
+        DeleteResult removeHistory = mongoTemplate.remove(query, AgentPersistentChatMemoryStore.HISTORY);
+        DeleteResult removeMemory = mongoTemplate.remove(query, AgentPersistentChatMemoryStore.COLLECTION);
 
         if (deleteCount > 0 || removeHistory.getDeletedCount() > 0 || removeMemory.getDeletedCount() > 0) {
             return Result.success("删除成功");
@@ -121,7 +119,7 @@ public class TAgentDialogueServiceImpl extends ServiceImpl<TAgentDialogueMapper,
         String memoryId = AgentDialogueMemoryUtil.memoryId(agentDialogueId);
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(memoryId));
-        Map<?, ?> history = mongoTemplate.findOne(query, Map.class, HISTORY);
+        Map<?, ?> history = mongoTemplate.findOne(query, Map.class, AgentPersistentChatMemoryStore.HISTORY);
         if (history == null) {
             return Collections.emptyList();
         }

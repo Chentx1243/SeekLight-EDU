@@ -79,3 +79,14 @@ storage:
     access-key: ${MINIO_ACCESS_KEY:z74d26ai}
     secret-key: ${MINIO_SECRET_KEY:zrfz6mwcbwz89f28}
     bucket: ${MINIO_KB_BUCKET:z74d26ai-kb-files}
+
+agent:
+  fastgpt:
+    # FastGPT OpenAI-compatible base URL, usually ends with /api/v1
+    base-url: ${FASTGPT_BASE_URL:https://atqnvuma.sealosbja.site/api/v1}
+    # Connection timeout in milliseconds
+    connect-timeout-ms: ${FASTGPT_CONNECT_TIMEOUT_MS:30000}
+    # Read timeout in milliseconds for streaming chat
+    read-timeout-ms: ${FASTGPT_READ_TIMEOUT_MS:600000}
+    # Max messages kept in Agent chat memory window
+    max-messages: ${FASTGPT_MAX_MESSAGES:10}

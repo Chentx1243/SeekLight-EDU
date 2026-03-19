@@ -1,8 +1,8 @@
 package com.xshxy.seeklightbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xshxy.seeklightbackend.config.AgentPersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.config.FastGptProperties;
-import com.xshxy.seeklightbackend.config.PersistentChatMemoryStore;
 import com.xshxy.seeklightbackend.domain.TAgent;
 import com.xshxy.seeklightbackend.domain.TAgentDialogue;
 import com.xshxy.seeklightbackend.domain.TAgentGroupPermission;
@@ -17,7 +17,7 @@ import com.xshxy.seeklightbackend.service.UserInfoService;
 import com.xshxy.seeklightbackend.util.AgentDialogueMemoryUtil;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.openai.OpenAiChatRequestParameters;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.TokenStream;
@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -46,7 +47,7 @@ public class AgentChatServiceImpl implements AgentChatService {
     private TAgentGroupPermissionService agentGroupPermissionService;
 
     @Resource
-    private PersistentChatMemoryStore store;
+    private AgentPersistentChatMemoryStore agentChatMemoryStore;
 
     @Resource
     private FastGptProperties fastGptProperties;
@@ -63,11 +64,12 @@ public class AgentChatServiceImpl implements AgentChatService {
                 .baseUrl(getFastGptBaseUrl())
                 .apiKey(agent.getAppKey())
                 .modelName(resolveModelName(agent))
+                .defaultRequestParameters(buildRequestParameters(agent))
                 .build();
 
         ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
                 .id(memoryId)
-                .chatMemoryStore(store)
+                .chatMemoryStore(agentChatMemoryStore)
                 .maxMessages(fastGptProperties.getMaxMessages())
                 .build();
 
@@ -171,5 +173,18 @@ public class AgentChatServiceImpl implements AgentChatService {
             return agent.getAppId().trim();
         }
         return "fastgpt-agent";
+    }
+
+    private OpenAiChatRequestParameters buildRequestParameters(TAgent agent) {
+        String appId = agent.getAppId();
+        if (!StringUtils.hasText(appId)) {
+            return OpenAiChatRequestParameters.builder()
+                    .modelName(resolveModelName(agent))
+                    .build();
+        }
+        return OpenAiChatRequestParameters.builder()
+                .modelName(resolveModelName(agent))
+                .customParameters(Map.of("appId", appId.trim()))
+                .build();
     }
 }
