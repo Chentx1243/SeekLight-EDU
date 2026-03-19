@@ -13,7 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 public interface AssistantService{
 
-
     TokenStream chat(@MemoryId Long memoryId, @UserMessage String message);
 
     @SystemMessage("""
