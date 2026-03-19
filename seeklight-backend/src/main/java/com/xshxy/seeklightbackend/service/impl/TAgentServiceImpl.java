@@ -48,6 +48,7 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
         if (request == null) {
             throw new BusinessException("Agent信息不能为空");
         }
+        TUser currentUser = requireCurrentUser();
 
         validateRequiredFields(
                 request.getAgentName(),
@@ -78,8 +79,8 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
         agent.setUpdatedAt(now);
         save(agent);
 
-        // 同步分组的权限
-        syncOwnerGroupPermission(agent, request.getOwnerUserId());
+        // Use the current logged-in user as the grant operator for default sharing records.
+        syncOwnerGroupPermission(agent, currentUser.getUserId());
         return agent;
     }
 
@@ -181,19 +182,13 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
 
     @Override
     public List<AvailableAgentDto> listAvailableAgentsForCurrentUser() {
-        TUser currentUser = userInfoService.getUser();
-        if (currentUser == null || currentUser.getUserId() == null) {
-            throw new BusinessException("用户未登录");
-        }
+        TUser currentUser = requireCurrentUser();
         return baseMapper.selectAvailableAgentsForUser(currentUser.getUserId(), currentUser.getGroupId());
     }
 
     @Override
     public List<String> listAvailableAgentTypesForCurrentUser() {
-        TUser currentUser = userInfoService.getUser();
-        if (currentUser == null || currentUser.getUserId() == null) {
-            throw new BusinessException("用户未登录");
-        }
+        TUser currentUser = requireCurrentUser();
         return baseMapper.selectAvailableAgentTypesForUser(currentUser.getUserId(), currentUser.getGroupId());
     }
 
@@ -280,6 +275,14 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
         }
     }
 
+    private TUser requireCurrentUser() {
+        TUser currentUser = userInfoService.getUser();
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new BusinessException("用户未登录");
+        }
+        return currentUser;
+    }
+
     private String normalizeNullableText(String value) {
         if (value == null) {
             return null;
@@ -318,7 +321,7 @@ public class TAgentServiceImpl extends ServiceImpl<TAgentMapper, TAgent> impleme
             return;
         }
 
-        // 变更为私有的时：剔除组织权限记录
+        // Private agent should not retain any organization-level sharing records.
         LambdaQueryWrapper<TAgentGroupPermission> removeWrapper = new LambdaQueryWrapper<>();
         removeWrapper.eq(TAgentGroupPermission::getAgentId, agent.getAgentId());
         agentGroupPermissionMapper.delete(removeWrapper);
