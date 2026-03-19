@@ -1,13 +1,21 @@
 package com.xshxy.seeklightbackend.service;
 
-import com.xshxy.seeklightbackend.domain.TAgentDialogue;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xshxy.seeklightbackend.common.Result;
+import com.xshxy.seeklightbackend.domain.TAgentDialogue;
+import com.xshxy.seeklightbackend.domain.dto.MessageDTO;
 
-/**
-* @author 陈凯宁
-* @description 针对表【t_agent_dialogue(Agent对话会话表)】的数据库操作Service
-* @createDate 2026-03-19 15:14:21
-*/
+import java.util.List;
+
 public interface TAgentDialogueService extends IService<TAgentDialogue> {
 
+    Long initDialogue(Long agentId, Integer userId, Integer groupId);
+
+    List<TAgentDialogue> getHistoryList(Integer userId);
+
+    Result<String> deleteHistoryItem(Long agentDialogueId);
+
+    List<MessageDTO> getChatHistory(Long agentDialogueId);
+
+    TAgentDialogue getOwnedDialogue(Long agentDialogueId, Integer userId);
 }
