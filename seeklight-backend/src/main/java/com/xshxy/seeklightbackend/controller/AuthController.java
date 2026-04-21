@@ -47,7 +47,6 @@ public class AuthController {
                             request.getPassword()
                     )
             );
-
             org.springframework.security.core.userdetails.User user =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
@@ -55,7 +54,6 @@ public class AuthController {
                     user.getUsername(),
                     user.getAuthorities().iterator().next().getAuthority()
             );
-
             return Result.success(token);
         } catch (AuthenticationException e) {
             return Result.failure("用户名或密码错误");

@@ -74,7 +74,6 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
         if (updateResult.getUpsertedId() != null) {
             System.out.println("已追加记录" + memoryId);
         }
-
         // 持久存储对话历史
         ChatMessage lastMessage = list.get(list.size() - 1);
         // 获取该对话的历史
@@ -103,8 +102,6 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
         if (historyUpdateResult.getUpsertedId() != null) {
             System.out.println("历史记录已保存" + memoryId);
         }
-
-
     }
 
     @Override

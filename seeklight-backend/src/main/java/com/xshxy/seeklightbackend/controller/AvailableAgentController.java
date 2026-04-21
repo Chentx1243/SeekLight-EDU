@@ -23,14 +23,14 @@ public class AvailableAgentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/available")
-    @Operation(summary = "查询当前登录用户可用的智能体列表", description = "返回当前登录用户自己创建的智能体，以及用户所属组织有权限使用的智能体，并自动去重，不返回敏感信息")
+    @Operation(summary = "查询当前登录用户可用的智能体列表", description = "返回当前登录用户自己创建的智能体，不返回敏感信息")
     public Result<List<AvailableAgentDto>> listAvailableAgentsForCurrentUser() {
         return Result.success(agentService.listAvailableAgentsForCurrentUser());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/available/types")
-    @Operation(summary = "查询当前登录用户可用的智能体类型列表", description = "返回当前登录用户可用智能体的 agentType 分类列表，自动去重，可用于 Agent 市场分类展示")
+    @Operation(summary = "查询当前登录用户可用的智能体类型列表", description = "返回当前登录用户可用智能体的 agentType 分类列表")
     public Result<List<String>> listAvailableAgentTypesForCurrentUser() {
         return Result.success(agentService.listAvailableAgentTypesForCurrentUser());
     }
