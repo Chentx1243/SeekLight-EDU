@@ -1,2 +1,254 @@
-## 是什么
-寻光教育是一款基于Langchain4J的多智能体对话平台项目，目前处于筹备阶段
+# Agent产研销协作平台
+
+一个面向企业多角色协同场景的智能体平台后端项目，聚焦“产、研、销”跨部门协作流程中的知识沉淀、模型治理、Agent 编排与对话交互。项目以 Spring Boot 为基础，结合 LangChain4j、Milvus、MinIO、MySQL、MongoDB 等组件，提供多智能体对话、知识库问答、模型与供应商管理、组织权限控制等能力。
+
+当前仓库主要包含后端服务 `seeklight-backend`。
+
+## 项目定位
+
+传统企业在产品、研发、销售协作过程中，常见问题包括：
+
+- 信息分散在聊天、文档、表格和不同系统中，难以复用
+- 不同团队对模型、知识库和工具的访问边界不清晰
+- 大模型接入后缺少统一管理，难以支撑实际业务流程
+
+本项目希望构建一个统一的 Agent 协作平台，使组织能够围绕“人、知识、模型、权限、对话记录”建立可管理、可扩展、可追溯的智能协作体系。
+
+## 核心能力
+
+- 用户认证与鉴权：基于 Spring Security + JWT 的登录注册与接口访问控制
+- 组织/群组管理：支持群组创建、修改、删除与详情查询
+- 模型供应商管理：统一维护模型供应商、模型列表与可用模型
+- 模型权限管理：支持群组级模型授权，控制不同组织可访问的模型范围
+- Agent 管理：支持 Agent 创建、更新、删除、可见范围配置与可用 Agent 查询
+- 对话管理：支持普通对话、Agent 对话、历史会话初始化、历史记录查询与删除
+- 知识库管理：支持知识库创建、文件上传、文件列表、删除与知识库问答
+- 文件解析与内容处理：支持 PDF、Word、Excel 等文件解析，为 RAG 流程提供基础能力
+- 向量检索：使用 Milvus 存储向量数据，支持知识片段召回
+- 对象存储：使用 MinIO 管理知识库文件
+- 流式输出：基于 SSE 提供流式问答体验
+- 外部搜索增强：集成百度搜索能力，为回答补充外部信息
+
+## 技术栈
+
+- 后端框架：Spring Boot 3
+- 安全认证：Spring Security、JWT
+- ORM：MyBatis-Plus
+- 智能体与大模型集成：LangChain4j
+- 向量数据库：Milvus
+- 关系型数据库：MySQL
+- 文档型数据库：MongoDB
+- 对象存储：MinIO
+- API 文档：Springdoc OpenAPI / Swagger UI
+- 文件解析：Apache PDFBox、Apache POI
+
+## 系统架构
+
+```text
+前端/客户端
+    |
+    v
+Spring Boot API
+    |
+    +-- 认证鉴权（JWT / Spring Security）
+    +-- 组织与权限管理
+    +-- 模型与供应商管理
+    +-- Agent 管理与对话编排
+    +-- 知识库与文件处理
+    |
+    +-- MySQL       -> 业务结构化数据
+    +-- MongoDB     -> 对话记忆 / 文档型数据
+    +-- MinIO       -> 知识库原始文件
+    +-- Milvus      -> 向量数据与检索
+    +-- LLM API     -> 模型推理与嵌入
+```
+
+## 目录结构
+
+```text
+seeklight-edu/
+├─ README.md
+├─ pom.xml
+├─ seeklight-backend/
+│  ├─ pom.xml
+│  └─ src/
+│     ├─ main/
+│     │  ├─ java/com/xshxy/seeklightbackend/
+│     │  │  ├─ config/        # 配置类
+│     │  │  ├─ controller/    # 接口层
+│     │  │  ├─ service/       # 业务层
+│     │  │  ├─ mapper/        # 数据访问层
+│     │  │  ├─ domain/        # 实体、DTO、请求响应对象
+│     │  │  ├─ util/          # 工具类
+│     │  │  └─ manager/       # SSE 等管理组件
+│     │  └─ resources/
+│     │     ├─ application.yml
+│     │     └─ mapper/        # MyBatis XML
+│     └─ test/
+```
+
+## 主要模块说明
+
+### 1. 认证与用户模块
+
+- 登录接口：`POST /login`
+- 注册接口：`POST /register`
+- 用户管理：`/user`
+
+负责用户注册、登录、JWT 签发、用户信息维护与权限校验。
+
+### 2. 组织与权限模块
+
+- 群组管理：`/group`
+- 模型权限管理：`/model-permission`
+- Agent 可见范围与授权：`/agent/permission`
+
+负责组织结构管理，以及模型、Agent 在不同群组之间的访问边界控制。
+
+### 3. 模型与供应商模块
+
+- 供应商管理：`/provider`
+- 模型管理：`/model`
+- 群组供应商凭证管理：`/group-provider-credential`
+
+支持维护模型供应商信息、模型列表和组织级凭证，便于统一接入不同模型服务。
+
+### 4. Agent 协作模块
+
+- Agent 管理：`/agent`
+- 可用 Agent 查询：`/agent/available`
+- Agent 对话：`/agent/chat/runs`
+- Agent 会话管理：`/agent/dialogue`
+
+用于管理业务 Agent，并支持基于 Agent 的流式对话和会话上下文管理。
+
+### 5. 通用对话与知识库模块
+
+- 通用对话：`/chatEve/runs`
+- 知识库问答：`/chatEve/kb_runs`
+- 普通会话管理：`/dialogue`
+- 知识库管理：`/knowledge-base`
+- 文件解析：`/fileChat`
+
+用于承载普通聊天、基于知识库的 RAG 问答、历史会话记录与文档解析能力。
+
+## 运行环境
+
+建议环境如下：
+
+- JDK 17
+- Maven 3.9+
+- MySQL 8.x
+- MongoDB 6.x+
+- Milvus
+- MinIO
+
+## 快速启动
+
+### 1. 克隆项目
+
+```bash
+git clone <your-repo-url>
+cd seeklight-edu
+```
+
+### 2. 配置后端
+
+后端配置文件位于：
+
+```text
+seeklight-backend/src/main/resources/application.yml
+```
+
+你需要根据自己的环境配置以下资源：
+
+- MySQL 连接信息
+- MongoDB 连接信息
+- Milvus 连接信息
+- MinIO 连接信息
+- 大模型 API Key、Base URL、模型名
+- Embedding 模型配置
+- 百度搜索 API 配置
+- FastGPT 兼容接口配置
+
+建议做法：
+
+- 本地开发时将敏感信息迁移到环境变量或私有配置文件
+- 不要在公开仓库中提交真实的数据库密码、对象存储密钥、模型密钥
+
+### 3. 启动后端服务
+
+在项目根目录执行：
+
+```bash
+cd seeklight-backend
+../mvnw spring-boot:run
+```
+
+Windows 也可以使用：
+
+```bash
+cd seeklight-backend
+..\mvnw.cmd spring-boot:run
+```
+
+### 4. 打包项目
+
+```bash
+cd seeklight-backend
+../mvnw clean package
+```
+
+## 接口文档
+
+项目已集成 OpenAPI / Swagger，启动后可通过以下地址访问接口文档：
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+OpenAPI 描述地址：
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+## 数据存储职责划分
+
+- MySQL：用户、群组、模型、供应商、Agent、权限等结构化业务数据
+- MongoDB：对话记忆、聊天历史等更适合文档化存储的数据
+- MinIO：知识库原始文件与对象存储
+- Milvus：文档向量、语义检索与 RAG 召回
+
+## 适用场景
+
+- 企业内部多角色智能协作平台
+- 面向产研销流程的知识沉淀与复用
+- 基于组织权限的模型与 Agent 治理
+- 结合知识库与外部搜索的智能问答系统
+- 课程设计、毕业设计、企业智能体平台原型实现
+
+## 项目特点
+
+- 不是单一聊天机器人，而是面向组织协作的 Agent 平台
+- 不只接大模型接口，还包含权限、知识、文件、记忆、检索等完整支撑层
+- 具备较强的扩展空间，可以继续接入更多模型供应商、工具调用链和业务 Agent
+
+## 后续可扩展方向
+
+- 增加前端可视化管理界面
+- 支持更多模型供应商与路由策略
+- 增加 Agent 工作流编排能力
+- 增加知识库切片、召回评估与重排能力
+- 增加审计日志、配额控制与多租户能力
+- 完善测试、部署脚本与容器化支持
+
+## 注意事项
+
+- 当前仓库中的配置文件包含外部服务连接项，建议尽快完成敏感信息脱敏与环境变量化
+- 如果用于答辩或展示，建议补充系统截图、业务流程图和数据库设计图
+- 如果用于团队协作，建议继续补充部署文档、接口示例和初始化 SQL
+
+## 许可证
+
+如需开源发布，建议补充具体 License，例如 MIT、Apache-2.0 或 GPL-3.0。
