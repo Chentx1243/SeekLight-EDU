@@ -70,6 +70,9 @@ public class ChatEveServiceImpl implements ChatEveService {
     private TDialogueService dialogueService;
 
     @Resource
+    private DialogueTitleGenerator dialogueTitleGenerator;
+
+    @Resource
     private TModelService modelService;
 
     @Resource
@@ -118,7 +121,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         TDialogue dialogue = checkDialogue(chatBody.getDialogueId(), user);
 
         if (!StringUtils.hasText(dialogue.getTitle())) {
-            dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
+            dialogue.setTitle(dialogueTitleGenerator.generate(userContent));
             dialogue.setModelId(modelEntity.getModelId());
             dialogueService.updateById(dialogue);
         }
@@ -199,7 +202,7 @@ public class ChatEveServiceImpl implements ChatEveService {
         ChatKbRequest.Message message = messages.get(0);
         String userContent = message.getContent();
         if (!StringUtils.hasText(dialogue.getTitle())) {
-            dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
+            dialogue.setTitle(dialogueTitleGenerator.generate(userContent));
             if (dialogue.getModelId() == null) {
                 dialogue.setModelId(model.getModelId());
             }

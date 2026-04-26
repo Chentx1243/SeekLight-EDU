@@ -41,6 +41,9 @@ public class AgentChatServiceImpl implements AgentChatService {
     private TAgentDialogueService agentDialogueService;
 
     @Resource
+    private DialogueTitleGenerator dialogueTitleGenerator;
+
+    @Resource
     private TAgentService agentService;
 
     @Resource
@@ -156,7 +159,7 @@ public class AgentChatServiceImpl implements AgentChatService {
 
     private void updateDialogueTitle(TAgentDialogue dialogue, String userContent) {
         if (dialogue.getTitle() == null || dialogue.getTitle().isBlank()) {
-            dialogue.setTitle(userContent.substring(0, Math.min(10, userContent.length())));
+            dialogue.setTitle(dialogueTitleGenerator.generate(userContent));
             agentDialogueService.updateById(dialogue);
         }
     }
