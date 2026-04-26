@@ -21,7 +21,7 @@ public class Langchain4jConfig {
     private EmbeddingStore<TextSegment> embeddingStore;
 
     /**
-     * RAG：文本切断bean：用于将document按照特定规则切断chunk
+     * RAG：文本切断bean：用于将document按照特定规则切断chunk；需要指定Token计量模型
      * @return
      */
 //    @Bean

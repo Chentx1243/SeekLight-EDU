@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
- * 百度搜索配置属性类
+ * 百度搜索配置属性类，用于加载百度搜索API的基本配置，实现项目中的“联网搜素”能力
  */
 @Component
 @ConfigurationProperties(prefix = "baidu.search")
